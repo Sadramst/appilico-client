@@ -1,7 +1,7 @@
 import apiClient from "./api-client";
 import type { IApiResponse } from "@/types/api.types";
 
-const UPLOAD_BASE = "/upload";
+const UPLOAD_BASE = "/images";
 
 export const uploadService = {
   uploadImage: async (file: File, folder?: string): Promise<IApiResponse<{ url: string }>> => {
@@ -9,7 +9,7 @@ export const uploadService = {
     formData.append("file", file);
     if (folder) formData.append("folder", folder);
     const response = await apiClient.post<IApiResponse<{ url: string }>>(
-      `${UPLOAD_BASE}/image`,
+      `${UPLOAD_BASE}/upload`,
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );
@@ -21,7 +21,7 @@ export const uploadService = {
     files.forEach((file) => formData.append("files", file));
     if (folder) formData.append("folder", folder);
     const response = await apiClient.post<IApiResponse<{ urls: string[] }>>(
-      `${UPLOAD_BASE}/images`,
+      `${UPLOAD_BASE}/upload`,
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );

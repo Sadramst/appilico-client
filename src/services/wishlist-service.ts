@@ -21,7 +21,7 @@ export const wishlistService = {
   },
 
   check: async (productId: string): Promise<IApiResponse<{ isInWishlist: boolean }>> => {
-    const response = await apiClient.get<IApiResponse<{ isInWishlist: boolean }>>(`${WISHLIST_BASE}/${productId}/check`);
+    const response = await apiClient.get<IApiResponse<{ isInWishlist: boolean }>>(`${WISHLIST_BASE}/check/${productId}`);
     return response.data;
   },
 };

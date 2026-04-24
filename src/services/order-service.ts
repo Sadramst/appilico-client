@@ -20,7 +20,7 @@ export const orderService = {
   },
 
   getMyOrders: async (params?: IQueryParams): Promise<IApiResponse<IPaginatedResponse<IOrder>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IOrder>>>(`${ORDERS_BASE}/my-orders`, { params });
+    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IOrder>>>(`${ORDERS_BASE}/my`, { params });
     return response.data;
   },
 

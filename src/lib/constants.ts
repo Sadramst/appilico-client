@@ -1,4 +1,4 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://localhost:5001/api";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://appilico-server.onrender.com/api";
 
 export const APP_NAME = "Appilico";
 export const APP_DESCRIPTION = "Your premium e-commerce destination";

@@ -45,4 +45,9 @@ export const voucherService = {
     const response = await apiClient.post<IApiResponse<IValidateVoucherResponse>>(`${VOUCHERS_BASE}/validate`, data);
     return response.data;
   },
+
+  redeem: async (data: { code: string; orderId: string }): Promise<IApiResponse<null>> => {
+    const response = await apiClient.post<IApiResponse<null>>(`${VOUCHERS_BASE}/redeem`, data);
+    return response.data;
+  },
 };

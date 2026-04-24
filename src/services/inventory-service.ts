@@ -6,7 +6,7 @@ const INVENTORY_BASE = "/inventory";
 
 export const inventoryService = {
   getAll: async (params?: IQueryParams): Promise<IApiResponse<IPaginatedResponse<IStockItem>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IStockItem>>>(INVENTORY_BASE, { params });
+    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IStockItem>>>(`${INVENTORY_BASE}/low-stock`, { params });
     return response.data;
   },
 
@@ -15,12 +15,21 @@ export const inventoryService = {
     return response.data;
   },
 
+  getByProductId: async (
+    productId: string
+  ): Promise<IApiResponse<IStockItem>> => {
+    const response = await apiClient.get<IApiResponse<IStockItem>>(
+      `${INVENTORY_BASE}/product/${productId}`
+    );
+    return response.data;
+  },
+
   getHistory: async (
     productId: string,
     params?: IQueryParams
   ): Promise<IApiResponse<IPaginatedResponse<IInventoryTransaction>>> => {
     const response = await apiClient.get<IApiResponse<IPaginatedResponse<IInventoryTransaction>>>(
-      `${INVENTORY_BASE}/${productId}/history`,
+      `${INVENTORY_BASE}/product/${productId}`,
       { params }
     );
     return response.data;

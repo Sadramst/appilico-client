@@ -10,8 +10,18 @@ export const paymentService = {
     return response.data;
   },
 
-  getMethods: async (): Promise<IApiResponse<string[]>> => {
-    const response = await apiClient.get<IApiResponse<string[]>>(`${PAYMENTS_BASE}/methods`);
+  getById: async (id: string): Promise<IApiResponse<IPayment>> => {
+    const response = await apiClient.get<IApiResponse<IPayment>>(`${PAYMENTS_BASE}/${id}`);
     return response.data;
+  },
+
+  create: async (data: Record<string, unknown>): Promise<IApiResponse<IPayment>> => {
+    const response = await apiClient.post<IApiResponse<IPayment>>(PAYMENTS_BASE, data);
+    return response.data;
+  },
+
+  getMethods: async (): Promise<IApiResponse<string[]>> => {
+    // Backend doesn't have a dedicated methods endpoint; return default methods
+    return { success: true, data: ["CreditCard", "DebitCard", "PayPal", "BankTransfer"], message: "Payment methods", errors: [], timestamp: new Date().toISOString() };
   },
 };
