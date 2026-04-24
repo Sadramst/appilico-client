@@ -52,7 +52,7 @@ export function CategoryGrid() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Link href={`/categories/${category.slug}`}>
+                <Link href={`/categories/${category.id}`}>
                   <Card className="group overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300">
                     <CardContent className="p-0">
                       <div

@@ -21,35 +21,19 @@ export function useProduct(id: string) {
   });
 }
 
-export function useFeaturedProducts() {
+export function useFeaturedProducts(count?: number) {
   return useQuery({
-    queryKey: ["products", "featured"],
-    queryFn: () => productService.getFeatured(),
+    queryKey: ["products", "featured", count],
+    queryFn: () => productService.getFeatured(count),
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useTrendingProducts() {
+export function useProductBySku(sku: string) {
   return useQuery({
-    queryKey: ["products", "trending"],
-    queryFn: () => productService.getTrending(),
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-export function useRelatedProducts(productId: string) {
-  return useQuery({
-    queryKey: ["products", "related", productId],
-    queryFn: () => productService.getRelated(productId),
-    enabled: !!productId,
-  });
-}
-
-export function useProductSearch(query: string, page?: number, pageSize?: number) {
-  return useQuery({
-    queryKey: ["products", "search", query, page, pageSize],
-    queryFn: () => productService.search(query, page, pageSize),
-    enabled: query.length >= 2,
+    queryKey: ["product", "sku", sku],
+    queryFn: () => productService.getBySku(sku),
+    enabled: !!sku,
   });
 }
 

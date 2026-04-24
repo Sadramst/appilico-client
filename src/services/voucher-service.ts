@@ -1,23 +1,19 @@
 import apiClient from "./api-client";
-import type { IApiResponse, IPaginatedResponse, IQueryParams } from "@/types/api.types";
+import type { IApiResponse, IQueryParams } from "@/types/api.types";
 import type {
   IVoucher,
   ICreateVoucherRequest,
   IUpdateVoucherRequest,
   IValidateVoucherRequest,
   IValidateVoucherResponse,
+  IRedeemVoucherRequest,
 } from "@/types/voucher.types";
 
 const VOUCHERS_BASE = "/vouchers";
 
 export const voucherService = {
-  getAll: async (params?: IQueryParams): Promise<IApiResponse<IPaginatedResponse<IVoucher>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IVoucher>>>(VOUCHERS_BASE, { params });
-    return response.data;
-  },
-
-  getMyVouchers: async (): Promise<IApiResponse<IVoucher[]>> => {
-    const response = await apiClient.get<IApiResponse<IVoucher[]>>(`${VOUCHERS_BASE}/my-vouchers`);
+  getAll: async (params?: IQueryParams): Promise<IApiResponse<IVoucher[]>> => {
+    const response = await apiClient.get<IApiResponse<IVoucher[]>>(VOUCHERS_BASE, { params });
     return response.data;
   },
 
@@ -46,7 +42,7 @@ export const voucherService = {
     return response.data;
   },
 
-  redeem: async (data: { code: string; orderId: string }): Promise<IApiResponse<null>> => {
+  redeem: async (data: IRedeemVoucherRequest): Promise<IApiResponse<null>> => {
     const response = await apiClient.post<IApiResponse<null>>(`${VOUCHERS_BASE}/redeem`, data);
     return response.data;
   },

@@ -29,7 +29,7 @@ interface CartState {
 }
 
 function calculateTotals(items: ICartItem[], voucherDiscount: number) {
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const discountAmount = voucherDiscount;
   const taxRate = 0.08;
   const taxAmount = (subtotal - discountAmount) * taxRate;
@@ -70,7 +70,7 @@ export const useCartStore = create<CartState>()(
         if (existingIndex >= 0) {
           newItems = items.map((i, idx) =>
             idx === existingIndex
-              ? { ...i, quantity: Math.min(i.quantity + item.quantity, i.stockQuantity) }
+              ? { ...i, quantity: i.quantity + item.quantity }
               : i
           );
         } else {
@@ -93,7 +93,7 @@ export const useCartStore = create<CartState>()(
           return;
         }
         const newItems = get().items.map((i) =>
-          i.id === itemId ? { ...i, quantity: Math.min(quantity, i.stockQuantity) } : i
+          i.id === itemId ? { ...i, quantity } : i
         );
         const totals = calculateTotals(newItems, get().voucherDiscount);
         set({ items: newItems, ...totals });

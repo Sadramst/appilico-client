@@ -9,7 +9,7 @@ import { useMyOrders } from "@/hooks/use-orders";
 
 export default function OrdersPage() {
   const { data, isLoading } = useMyOrders({ page: 1, pageSize: 20 });
-  const orders = data?.data?.items ?? [];
+  const orders = data?.data ?? [];
 
   return (
     <div className="container mx-auto px-4 py-8">

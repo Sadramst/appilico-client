@@ -31,6 +31,7 @@ import {
 import { CartSummary } from "@/components/cart/cart-summary";
 import { useCartStore } from "@/stores/cart-store";
 import { useCreateOrder } from "@/hooks/use-orders";
+import { PaymentMethodLabels } from "@/types/order.types";
 import { addressSchema, type TAddressFormData } from "@/lib/validators";
 
 const steps = [
@@ -42,7 +43,7 @@ const steps = [
 export function CheckoutForm() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("CreditCard");
+  const [paymentMethod, setPaymentMethod] = useState(0); // 0=CreditCard
   const { items, total, clearCart } = useCartStore();
   const createOrder = useCreateOrder();
 
@@ -283,16 +284,16 @@ export function CheckoutForm() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
+                  <RadioGroup value={String(paymentMethod)} onValueChange={(v) => setPaymentMethod(Number(v))} className="space-y-3">
                     {[
-                      { value: "CreditCard", label: "Credit / Debit Card", desc: "Visa, Mastercard, Amex" },
-                      { value: "PayPal", label: "PayPal", desc: "Pay with your PayPal account" },
-                      { value: "BankTransfer", label: "Bank Transfer", desc: "Direct bank transfer" },
+                      { value: "0", label: "Credit / Debit Card", desc: "Visa, Mastercard, Amex" },
+                      { value: "2", label: "PayPal", desc: "Pay with your PayPal account" },
+                      { value: "3", label: "Bank Transfer", desc: "Direct bank transfer" },
                     ].map((method) => (
                       <label
                         key={method.value}
                         className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
-                          paymentMethod === method.value ? "border-primary bg-primary/5" : "hover:bg-muted"
+                          String(paymentMethod) === method.value ? "border-primary bg-primary/5" : "hover:bg-muted"
                         }`}
                       >
                         <RadioGroupItem value={method.value} />
@@ -333,7 +334,7 @@ export function CheckoutForm() {
                   <Separator />
                   <div>
                     <h4 className="text-sm font-medium text-muted-foreground mb-2">Payment</h4>
-                    <p className="text-sm">{paymentMethod}</p>
+                    <p className="text-sm">{PaymentMethodLabels[paymentMethod] ?? "Unknown"}</p>
                   </div>
                   <Separator />
                   <div>
@@ -347,7 +348,7 @@ export function CheckoutForm() {
                             {item.productName} × {item.quantity}
                           </span>
                           <span className="font-medium">
-                            {(item.price * item.quantity).toFixed(2)}
+                            {(item.unitPrice * item.quantity).toFixed(2)}
                           </span>
                         </div>
                       ))}

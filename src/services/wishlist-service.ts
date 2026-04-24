@@ -1,12 +1,20 @@
 import apiClient from "./api-client";
 import type { IApiResponse } from "@/types/api.types";
-import type { IProduct } from "@/types/product.types";
+
+export interface IWishlistItem {
+  id: string;
+  productId: string;
+  productName: string;
+  price: number;
+  imageUrl: string | null;
+  addedAt: string;
+}
 
 const WISHLIST_BASE = "/wishlist";
 
 export const wishlistService = {
-  getAll: async (): Promise<IApiResponse<IProduct[]>> => {
-    const response = await apiClient.get<IApiResponse<IProduct[]>>(WISHLIST_BASE);
+  getAll: async (): Promise<IApiResponse<IWishlistItem[]>> => {
+    const response = await apiClient.get<IApiResponse<IWishlistItem[]>>(WISHLIST_BASE);
     return response.data;
   },
 
@@ -20,8 +28,8 @@ export const wishlistService = {
     return response.data;
   },
 
-  check: async (productId: string): Promise<IApiResponse<{ isInWishlist: boolean }>> => {
-    const response = await apiClient.get<IApiResponse<{ isInWishlist: boolean }>>(`${WISHLIST_BASE}/check/${productId}`);
+  check: async (productId: string): Promise<IApiResponse<boolean>> => {
+    const response = await apiClient.get<IApiResponse<boolean>>(`${WISHLIST_BASE}/check/${productId}`);
     return response.data;
   },
 };

@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useUIStore } from "@/stores/ui-store";
 import { useSearchStore } from "@/stores/search-store";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useProductSearch } from "@/hooks/use-products";
+import { useProducts } from "@/hooks/use-products";
 import { formatPrice } from "@/lib/utils";
 
 export function SearchBar() {
@@ -21,10 +21,8 @@ export function SearchBar() {
   const debouncedQuery = useDebounce(localQuery, 300);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: results, isLoading } = useProductSearch(
-    debouncedQuery.length >= 2 ? debouncedQuery : "",
-    1,
-    5
+  const { data: results, isLoading } = useProducts(
+    debouncedQuery.length >= 2 ? { searchTerm: debouncedQuery, pageSize: 5 } : undefined
   );
 
   useEffect(() => {
@@ -44,10 +42,10 @@ export function SearchBar() {
     }
   };
 
-  const handleProductClick = (slug: string) => {
+  const handleProductClick = (productId: string) => {
     setSearchOpen(false);
     setLocalQuery("");
-    router.push(`/products/${slug}`);
+    router.push(`/products/${productId}`);
   };
 
   return (
@@ -89,12 +87,12 @@ export function SearchBar() {
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
-                ) : results?.data?.items && results.data.items.length > 0 ? (
+                ) : results?.data && results.data.length > 0 ? (
                   <div className="space-y-1">
-                    {results.data.items.map((product) => (
+                    {results.data.map((product) => (
                       <button
                         key={product.id}
-                        onClick={() => handleProductClick(product.slug)}
+                        onClick={() => handleProductClick(product.id)}
                         className="flex items-center gap-3 w-full rounded-lg p-2 text-left hover:bg-muted transition-colors"
                       >
                         <div className="h-10 w-10 rounded bg-muted shrink-0" />
@@ -103,7 +101,7 @@ export function SearchBar() {
                             {product.name}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {formatPrice(product.price)}
+                            {formatPrice(product.basePrice)}
                           </p>
                         </div>
                       </button>

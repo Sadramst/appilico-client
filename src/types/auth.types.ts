@@ -1,28 +1,17 @@
 export interface IUser {
   id: string;
-  email: string;
   firstName: string;
   lastName: string;
-  fullName: string;
-  phoneNumber?: string;
-  avatarUrl?: string;
-  role: UserRole;
-  isActive: boolean;
-  emailConfirmed: boolean;
-  loyaltyPoints: number;
-  loyaltyTier: LoyaltyTier;
-  createdAt: string;
-  updatedAt: string;
+  email: string;
+  avatar: string | null;
+  roles: string[];
 }
 
-export type UserRole = "Customer" | "Admin" | "SuperAdmin";
-
-export type LoyaltyTier = "Bronze" | "Silver" | "Gold" | "Platinum";
+export type UserRole = "Customer" | "Admin" | "Manager";
 
 export interface ILoginRequest {
   email: string;
   password: string;
-  rememberMe?: boolean;
 }
 
 export interface IRegisterRequest {
@@ -31,14 +20,14 @@ export interface IRegisterRequest {
   email: string;
   password: string;
   confirmPassword: string;
-  acceptTerms: boolean;
+  phoneNumber?: string;
 }
 
 export interface IAuthResponse {
-  user: IUser;
   accessToken: string;
   refreshToken: string;
   expiresAt: string;
+  user: IUser;
 }
 
 export interface IForgotPasswordRequest {
@@ -49,7 +38,6 @@ export interface IResetPasswordRequest {
   email: string;
   token: string;
   newPassword: string;
-  confirmPassword: string;
 }
 
 export interface IChangePasswordRequest {
@@ -62,4 +50,9 @@ export interface IUpdateProfileRequest {
   firstName: string;
   lastName: string;
   phoneNumber?: string;
+  dateOfBirth?: string;
+}
+
+export interface IRevokeTokenRequest {
+  token: string;
 }

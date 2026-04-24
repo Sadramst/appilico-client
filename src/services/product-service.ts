@@ -1,10 +1,12 @@
 import apiClient from "./api-client";
-import type { IApiResponse, IPaginatedResponse } from "@/types/api.types";
+import type { IApiResponse } from "@/types/api.types";
 import type {
   IProduct,
   IProductFilter,
   ICreateProductRequest,
   IUpdateProductRequest,
+  ICreateVariantRequest,
+  IProductVariant,
 } from "@/types/product.types";
 
 const PRODUCTS_BASE = "/products";
@@ -12,8 +14,8 @@ const PRODUCTS_BASE = "/products";
 export const productService = {
   getAll: async (
     params?: IProductFilter
-  ): Promise<IApiResponse<IPaginatedResponse<IProduct>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IProduct>>>(
+  ): Promise<IApiResponse<IProduct[]>> => {
+    const response = await apiClient.get<IApiResponse<IProduct[]>>(
       PRODUCTS_BASE,
       { params }
     );
@@ -27,42 +29,17 @@ export const productService = {
     return response.data;
   },
 
-  getBySlug: async (slug: string): Promise<IApiResponse<IProduct>> => {
+  getBySku: async (sku: string): Promise<IApiResponse<IProduct>> => {
     const response = await apiClient.get<IApiResponse<IProduct>>(
-      `${PRODUCTS_BASE}/slug/${slug}`
+      `${PRODUCTS_BASE}/sku/${sku}`
     );
     return response.data;
   },
 
-  getFeatured: async (): Promise<IApiResponse<IProduct[]>> => {
+  getFeatured: async (count?: number): Promise<IApiResponse<IProduct[]>> => {
     const response = await apiClient.get<IApiResponse<IProduct[]>>(
-      `${PRODUCTS_BASE}/featured`
-    );
-    return response.data;
-  },
-
-  getTrending: async (): Promise<IApiResponse<IProduct[]>> => {
-    const response = await apiClient.get<IApiResponse<IProduct[]>>(
-      `${PRODUCTS_BASE}/trending`
-    );
-    return response.data;
-  },
-
-  getRelated: async (id: string): Promise<IApiResponse<IProduct[]>> => {
-    const response = await apiClient.get<IApiResponse<IProduct[]>>(
-      `${PRODUCTS_BASE}/${id}/related`
-    );
-    return response.data;
-  },
-
-  search: async (
-    query: string,
-    page?: number,
-    pageSize?: number
-  ): Promise<IApiResponse<IPaginatedResponse<IProduct>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IProduct>>>(
-      `${PRODUCTS_BASE}/search`,
-      { params: { query, page, pageSize } }
+      `${PRODUCTS_BASE}/featured`,
+      { params: { count } }
     );
     return response.data;
   },
@@ -93,16 +70,13 @@ export const productService = {
     return response.data;
   },
 
-  uploadImages: async (
-    id: string,
-    files: File[]
-  ): Promise<IApiResponse<{ urls: string[] }>> => {
-    const formData = new FormData();
-    files.forEach((file) => formData.append("files", file));
-    const response = await apiClient.post<IApiResponse<{ urls: string[] }>>(
-      `${PRODUCTS_BASE}/${id}/images`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
+  addVariant: async (
+    productId: string,
+    data: ICreateVariantRequest
+  ): Promise<IApiResponse<IProductVariant>> => {
+    const response = await apiClient.post<IApiResponse<IProductVariant>>(
+      `${PRODUCTS_BASE}/${productId}/variants`,
+      data
     );
     return response.data;
   },

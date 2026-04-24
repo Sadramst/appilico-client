@@ -25,7 +25,7 @@ export function useAuth() {
       const { user: userData, accessToken, refreshToken } = response.data;
       storeLogin(userData, accessToken, refreshToken);
       toast.success(`Welcome back, ${userData.firstName}!`);
-      if (userData.role === "Admin" || userData.role === "SuperAdmin") {
+      if (userData.roles?.includes("Admin") || userData.roles?.includes("SuperAdmin")) {
         router.push("/dashboard");
       } else {
         router.push("/");
@@ -61,18 +61,6 @@ export function useAuth() {
     },
   });
 
-  const uploadAvatarMutation = useMutation({
-    mutationFn: (file: File) => authService.uploadAvatar(file),
-    onSuccess: (response) => {
-      updateUser({ avatarUrl: response.data.url });
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast.success("Avatar updated");
-    },
-    onError: () => {
-      toast.error("Failed to upload avatar");
-    },
-  });
-
   const logout = () => {
     storeLogout();
     queryClient.clear();
@@ -91,8 +79,6 @@ export function useAuth() {
     isRegistering: registerMutation.isPending,
     updateProfile: updateProfileMutation.mutate,
     isUpdatingProfile: updateProfileMutation.isPending,
-    uploadAvatar: uploadAvatarMutation.mutate,
-    isUploadingAvatar: uploadAvatarMutation.isPending,
     logout,
   };
 }

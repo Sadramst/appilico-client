@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice, formatDate } from "@/lib/utils";
-import { ORDER_STATUS_COLORS } from "@/lib/constants";
+import { OrderStatusLabels } from "@/types/order.types";
 import type { IOrder } from "@/types/order.types";
 
 interface OrderCardProps {
@@ -28,22 +28,19 @@ export function OrderCard({ order }: OrderCardProps) {
                 <h3 className="font-semibold text-sm">
                   Order #{order.orderNumber}
                 </h3>
-                <Badge
-                  variant="secondary"
-                  className={ORDER_STATUS_COLORS[order.status] ?? ""}
-                >
-                  {order.status}
+                <Badge variant="secondary">
+                  {OrderStatusLabels[order.orderStatus] ?? "Unknown"}
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                {formatDate(order.createdAt)} · {order.items.length} item
+                {formatDate(order.orderDate)} · {order.items.length} item
                 {order.items.length !== 1 ? "s" : ""}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-lg font-bold">{formatPrice(order.total)}</span>
+            <span className="text-lg font-bold">{formatPrice(order.totalAmount)}</span>
             <Button asChild variant="outline" size="sm" className="gap-1">
               <Link href={`/orders/${order.id}`}>
                 <Eye className="h-3.5 w-3.5" />

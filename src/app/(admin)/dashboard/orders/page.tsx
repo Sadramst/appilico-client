@@ -6,14 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAllOrders } from "@/hooks/use-orders";
 import { formatPrice, formatDate } from "@/lib/utils";
-import { ORDER_STATUS_COLORS } from "@/lib/constants";
+import { OrderStatusLabels } from "@/types/order.types";
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminOrdersPage() {
   const { data, isLoading } = useAllOrders({ page: 1, pageSize: 20 });
-  const orders = data?.data?.items ?? [];
+  const orders = data?.data ?? [];
 
   return (
     <div>
@@ -46,10 +46,10 @@ export default function AdminOrdersPage() {
                   <td className="py-3 font-medium">#{order.orderNumber}</td>
                   <td className="py-3 hidden sm:table-cell text-muted-foreground">{order.customerName ?? "Guest"}</td>
                   <td className="py-3">
-                    <Badge variant="secondary" className={ORDER_STATUS_COLORS[order.status] ?? ""}>{order.status}</Badge>
+                    <Badge variant="secondary">{OrderStatusLabels[order.orderStatus] ?? "Unknown"}</Badge>
                   </td>
-                  <td className="py-3 text-right font-medium">{formatPrice(order.total)}</td>
-                  <td className="py-3 text-right text-muted-foreground hidden md:table-cell">{formatDate(order.createdAt)}</td>
+                  <td className="py-3 text-right font-medium">{formatPrice(order.totalAmount)}</td>
+                  <td className="py-3 text-right text-muted-foreground hidden md:table-cell">{formatDate(order.orderDate)}</td>
                   <td className="py-3 text-right">
                     <Button asChild variant="ghost" size="icon" className="h-7 w-7">
                       <Link href={`/dashboard/orders/${order.id}`}><Eye className="h-3.5 w-3.5" /></Link>

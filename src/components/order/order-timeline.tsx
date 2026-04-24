@@ -2,38 +2,33 @@
 
 import { Check, Circle, Package, Truck, MapPin, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { OrderStatus } from "@/types/order.types";
+import { OrderStatusLabels } from "@/types/order.types";
 
 interface OrderTimelineProps {
-  status: OrderStatus;
+  status: number;
 }
 
-const timelineSteps: { status: OrderStatus; label: string; icon: React.ElementType }[] = [
-  { status: "Pending", label: "Order Placed", icon: Clock },
-  { status: "Confirmed", label: "Confirmed", icon: Check },
-  { status: "Processing", label: "Processing", icon: Package },
-  { status: "Shipped", label: "Shipped", icon: Truck },
-  { status: "Delivered", label: "Delivered", icon: MapPin },
+const timelineSteps: { status: number; label: string; icon: React.ElementType }[] = [
+  { status: 0, label: "Order Placed", icon: Clock },      // Pending
+  { status: 1, label: "Confirmed", icon: Check },         // Confirmed
+  { status: 2, label: "Processing", icon: Package },      // Processing
+  { status: 3, label: "Shipped", icon: Truck },            // Shipped
+  { status: 4, label: "Delivered", icon: MapPin },         // Delivered
 ];
 
-const statusOrder: Record<string, number> = {
-  Pending: 0,
-  Confirmed: 1,
-  Processing: 2,
-  Shipped: 3,
-  Delivered: 4,
-};
-
 export function OrderTimeline({ status }: OrderTimelineProps) {
-  const currentIndex = statusOrder[status] ?? -1;
+  const currentIndex = timelineSteps.findIndex((s) => s.status === status);
 
-  if (status === "Cancelled" || status === "Refunded" || status === "Returned") {
+  if (status === 5 || status === 6 || status === 7) {
+    // Cancelled, Refunded, Returned
     return (
       <div className="flex items-center gap-2 py-4">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-destructive text-destructive-foreground">
           <Circle className="h-4 w-4 fill-current" />
         </div>
-        <span className="text-sm font-medium text-destructive">{status}</span>
+        <span className="text-sm font-medium text-destructive">
+          {OrderStatusLabels[status] ?? "Unknown"}
+        </span>
       </div>
     );
   }

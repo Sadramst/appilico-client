@@ -4,16 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 import { inventoryService } from "@/services/inventory-service";
 import type { IQueryParams } from "@/types/api.types";
 
-export function useInventory(params?: IQueryParams) {
+export function useProductInventory(productId: string, params?: IQueryParams) {
   return useQuery({
-    queryKey: ["inventory", params],
-    queryFn: () => inventoryService.getAll(params),
+    queryKey: ["inventory", productId, params],
+    queryFn: () => inventoryService.getByProductId(productId, params),
+    enabled: !!productId,
   });
 }
 
-export function useLowStock() {
+export function useLowStock(threshold?: number) {
   return useQuery({
-    queryKey: ["inventory", "low-stock"],
-    queryFn: () => inventoryService.getLowStock(),
+    queryKey: ["inventory", "low-stock", threshold],
+    queryFn: () => inventoryService.getLowStock(threshold),
   });
 }

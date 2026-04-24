@@ -33,7 +33,6 @@ export default function ProfilePage() {
     defaultValues: {
       firstName: user?.firstName ?? "",
       lastName: user?.lastName ?? "",
-      phoneNumber: user?.phoneNumber ?? "",
     },
   });
 
@@ -55,9 +54,9 @@ export default function ProfilePage() {
             <CardContent className="p-6 flex items-center gap-6">
               <div className="relative">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={user?.avatarUrl} />
+                  <AvatarImage src={user?.avatar ?? undefined} />
                   <AvatarFallback className="text-xl bg-primary/10 text-primary">
-                    {user ? getInitials(user.fullName) : "U"}
+                    {user ? getInitials(`${user.firstName} ${user.lastName}`) : "U"}
                   </AvatarFallback>
                 </Avatar>
                 <Button
@@ -69,7 +68,7 @@ export default function ProfilePage() {
                 </Button>
               </div>
               <div>
-                <h3 className="font-semibold text-lg">{user?.fullName}</h3>
+                <h3 className="font-semibold text-lg">{user?.firstName} {user?.lastName}</h3>
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </CardContent>
@@ -111,20 +110,6 @@ export default function ProfilePage() {
                       )}
                     />
                   </div>
-
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <Button
                     type="submit"

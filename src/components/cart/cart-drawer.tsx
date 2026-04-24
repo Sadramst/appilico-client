@@ -56,9 +56,9 @@ export function CartDrawer() {
                   >
                     <div className="flex gap-3">
                       <div className="relative h-20 w-20 shrink-0 rounded-lg overflow-hidden bg-muted">
-                        {item.productImage ? (
+                        {item.imageUrl ? (
                           <ImageWithFallback
-                            src={item.productImage}
+                            src={item.imageUrl}
                             alt={item.productName}
                             fill
                             className="object-cover"
@@ -73,7 +73,7 @@ export function CartDrawer() {
 
                       <div className="flex-1 min-w-0">
                         <Link
-                          href={`/products/${item.productSlug}`}
+                          href={`/products/${item.productId}`}
                           onClick={closeCart}
                           className="text-sm font-medium line-clamp-2 hover:text-primary transition-colors"
                         >
@@ -85,7 +85,7 @@ export function CartDrawer() {
                           </p>
                         )}
                         <p className="text-sm font-semibold mt-1">
-                          {formatPrice(item.price)}
+                          {formatPrice(item.unitPrice)}
                         </p>
 
                         <div className="flex items-center justify-between mt-2">
@@ -107,7 +107,6 @@ export function CartDrawer() {
                               size="icon"
                               className="h-7 w-7"
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              disabled={item.quantity >= item.stockQuantity}
                             >
                               <Plus className="h-3 w-3" />
                             </Button>

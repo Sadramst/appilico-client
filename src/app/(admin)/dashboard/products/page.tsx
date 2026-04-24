@@ -14,7 +14,7 @@ import { formatPrice } from "@/lib/utils";
 
 export default function AdminProductsPage() {
   const { data, isLoading } = useProducts({ page: 1, pageSize: 20 });
-  const products = data?.data?.items ?? [];
+  const products = data?.data ?? [];
 
   return (
     <div>
@@ -68,7 +68,7 @@ export default function AdminProductsPage() {
                     </Link>
                   </td>
                   <td className="py-3 text-muted-foreground">{product.categoryName}</td>
-                  <td className="py-3">{formatPrice(product.price)}</td>
+                  <td className="py-3">{formatPrice(product.basePrice)}</td>
                   <td className="py-3">{product.stockQuantity}</td>
                   <td className="py-3">
                     <Badge variant={product.isActive ? "default" : "secondary"}>

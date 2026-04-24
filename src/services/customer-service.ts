@@ -1,12 +1,12 @@
 import apiClient from "./api-client";
-import type { IApiResponse, IPaginatedResponse, IQueryParams } from "@/types/api.types";
-import type { ICustomer, ICustomerAddress, ICreateAddressRequest, IUpdateAddressRequest } from "@/types/customer.types";
+import type { IApiResponse, IQueryParams } from "@/types/api.types";
+import type { ICustomer, IUpdateCustomerRequest, ICustomerLoyalty } from "@/types/customer.types";
 
 const CUSTOMERS_BASE = "/customers";
 
 export const customerService = {
-  getAll: async (params?: IQueryParams): Promise<IApiResponse<IPaginatedResponse<ICustomer>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<ICustomer>>>(CUSTOMERS_BASE, { params });
+  getAll: async (params?: IQueryParams): Promise<IApiResponse<ICustomer[]>> => {
+    const response = await apiClient.get<IApiResponse<ICustomer[]>>(CUSTOMERS_BASE, { params });
     return response.data;
   },
 
@@ -15,33 +15,23 @@ export const customerService = {
     return response.data;
   },
 
-  getAddresses: async (): Promise<IApiResponse<ICustomerAddress[]>> => {
-    const response = await apiClient.get<IApiResponse<ICustomerAddress[]>>(`${CUSTOMERS_BASE}/addresses`);
+  getMe: async (): Promise<IApiResponse<ICustomer>> => {
+    const response = await apiClient.get<IApiResponse<ICustomer>>(`${CUSTOMERS_BASE}/me`);
     return response.data;
   },
 
-  addAddress: async (data: ICreateAddressRequest): Promise<IApiResponse<ICustomerAddress>> => {
-    const response = await apiClient.post<IApiResponse<ICustomerAddress>>(`${CUSTOMERS_BASE}/addresses`, data);
+  update: async (id: string, data: IUpdateCustomerRequest): Promise<IApiResponse<ICustomer>> => {
+    const response = await apiClient.put<IApiResponse<ICustomer>>(`${CUSTOMERS_BASE}/${id}`, data);
     return response.data;
   },
 
-  updateAddress: async (id: string, data: IUpdateAddressRequest): Promise<IApiResponse<ICustomerAddress>> => {
-    const response = await apiClient.put<IApiResponse<ICustomerAddress>>(`${CUSTOMERS_BASE}/addresses/${id}`, data);
+  getLoyalty: async (id: string): Promise<IApiResponse<ICustomerLoyalty>> => {
+    const response = await apiClient.get<IApiResponse<ICustomerLoyalty>>(`${CUSTOMERS_BASE}/${id}/loyalty`);
     return response.data;
   },
 
-  deleteAddress: async (id: string): Promise<IApiResponse<null>> => {
-    const response = await apiClient.delete<IApiResponse<null>>(`${CUSTOMERS_BASE}/addresses/${id}`);
-    return response.data;
-  },
-
-  setDefaultAddress: async (id: string): Promise<IApiResponse<null>> => {
-    const response = await apiClient.post<IApiResponse<null>>(`${CUSTOMERS_BASE}/addresses/${id}/default`);
-    return response.data;
-  },
-
-  toggleActive: async (id: string): Promise<IApiResponse<null>> => {
-    const response = await apiClient.post<IApiResponse<null>>(`${CUSTOMERS_BASE}/${id}/toggle-active`);
+  addLoyaltyPoints: async (id: string, points: number): Promise<IApiResponse<null>> => {
+    const response = await apiClient.post<IApiResponse<null>>(`${CUSTOMERS_BASE}/${id}/loyalty/points`, null, { params: { points } });
     return response.data;
   },
 };

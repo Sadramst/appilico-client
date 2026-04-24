@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice, formatDate } from "@/lib/utils";
-import { ORDER_STATUS_COLORS } from "@/lib/constants";
-import type { IRecentOrder } from "@/types/dashboard.types";
+import { OrderStatusLabels } from "@/types/order.types";
+import type { IOrder } from "@/types/order.types";
 
 interface RecentOrdersTableProps {
-  orders: IRecentOrder[];
+  orders: IOrder[];
   isLoading?: boolean;
 }
 
@@ -62,18 +62,15 @@ export function RecentOrdersTable({ orders, isLoading }: RecentOrdersTableProps)
                     {order.customerName ?? "Guest"}
                   </td>
                   <td className="py-3">
-                    <Badge
-                      variant="secondary"
-                      className={`text-xs ${ORDER_STATUS_COLORS[order.status] ?? ""}`}
-                    >
-                      {order.status}
+                    <Badge variant="secondary" className="text-xs">
+                      {OrderStatusLabels[order.orderStatus] ?? "Unknown"}
                     </Badge>
                   </td>
                   <td className="py-3 text-right font-medium">
-                    {formatPrice(order.total)}
+                    {formatPrice(order.totalAmount)}
                   </td>
                   <td className="py-3 text-right text-muted-foreground hidden md:table-cell">
-                    {formatDate(order.createdAt)}
+                    {formatDate(order.orderDate)}
                   </td>
                   <td className="py-3 text-right">
                     <Button asChild variant="ghost" size="icon" className="h-7 w-7">

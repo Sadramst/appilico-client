@@ -29,14 +29,4 @@ export const cartService = {
     const response = await apiClient.delete<IApiResponse<null>>(CART_BASE);
     return response.data;
   },
-
-  applyVoucher: async (code: string): Promise<IApiResponse<ICart>> => {
-    const response = await apiClient.post<IApiResponse<ICart>>(`${CART_BASE}/voucher`, { code });
-    return response.data;
-  },
-
-  removeVoucher: async (): Promise<IApiResponse<ICart>> => {
-    const response = await apiClient.delete<IApiResponse<ICart>>(`${CART_BASE}/voucher`);
-    return response.data;
-  },
 };

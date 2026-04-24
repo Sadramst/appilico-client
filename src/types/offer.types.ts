@@ -1,38 +1,44 @@
 export interface ISpecialOffer {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  bannerImageUrl?: string;
-  discountType: OfferDiscountType;
-  discountValue: number;
+  bannerImageUrl: string | null;
+  offerType: number;
   startDate: string;
   endDate: string;
   isActive: boolean;
   products: ISpecialOfferProduct[];
-  createdAt: string;
-  updatedAt: string;
 }
 
-export type OfferDiscountType = "Percentage" | "FixedAmount";
+export const OfferTypeLabels: Record<number, string> = {
+  0: "Flash",
+  1: "Seasonal",
+  2: "Clearance",
+  3: "Bundle",
+};
 
 export interface ISpecialOfferProduct {
-  id: string;
   productId: string;
   productName: string;
-  productImage: string;
-  originalPrice: number;
   offerPrice: number;
+  originalPrice: number;
+  maxQuantityPerCustomer: number | null;
 }
 
 export interface ICreateOfferRequest {
-  title: string;
+  name: string;
   description: string;
-  discountType: OfferDiscountType;
-  discountValue: number;
+  offerType: number;
   startDate: string;
   endDate: string;
-  isActive: boolean;
-  productIds: string[];
 }
 
 export type IUpdateOfferRequest = ICreateOfferRequest;
+
+export interface IAddOfferProductsRequest {
+  products: {
+    productId: string;
+    offerPrice: number;
+    maxQuantityPerCustomer?: number | null;
+  }[];
+}

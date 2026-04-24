@@ -12,8 +12,8 @@ export interface IPagination {
   pageSize: number;
   totalCount: number;
   totalPages: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
+  hasPrevious: boolean;
+  hasNext: boolean;
 }
 
 export interface IPaginatedResponse<T> {
@@ -32,5 +32,5 @@ export interface IQueryParams {
   pageSize?: number;
   search?: string;
   sortBy?: string;
-  sortDirection?: "asc" | "desc";
+  sortDescending?: boolean;
 }

@@ -44,7 +44,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               className="absolute inset-0"
             >
               <ImageWithFallback
-                src={currentImage.url}
+                src={currentImage.imageUrl}
                 alt={currentImage.altText || productName}
                 fill
                 className="object-cover"
@@ -101,7 +101,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 )}
               >
                 <ImageWithFallback
-                  src={img.url}
+                  src={img.imageUrl}
                   alt={img.altText || `${productName} ${i + 1}`}
                   fill
                   className="object-cover"
@@ -119,7 +119,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           <DialogTitle className="sr-only">{productName}</DialogTitle>
           <div className="relative aspect-square">
             <ImageWithFallback
-              src={currentImage.url}
+              src={currentImage.imageUrl}
               alt={currentImage.altText || productName}
               fill
               className="object-contain"

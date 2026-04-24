@@ -61,9 +61,9 @@ export function AdminHeader() {
           <DropdownMenuTrigger>
             <Button variant="ghost" className="gap-2 h-9 px-2">
               <Avatar className="h-7 w-7">
-                <AvatarImage src={user?.avatarUrl} alt={user?.fullName} />
+                <AvatarImage src={user?.avatar ?? undefined} alt={user ? `${user.firstName} ${user.lastName}` : undefined} />
                 <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                  {user ? getInitials(user.fullName) : "A"}
+                  {user ? getInitials(`${user.firstName} ${user.lastName}`) : "A"}
                 </AvatarFallback>
               </Avatar>
               <span className="hidden md:inline-block text-sm font-medium">

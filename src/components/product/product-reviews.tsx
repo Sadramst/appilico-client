@@ -7,13 +7,12 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { StarRating } from "@/components/shared/star-rating";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { IProductReview, IRatingDistribution } from "@/types/review.types";
+import type { IProductReview } from "@/types/review.types";
 
 interface ProductReviewsProps {
   reviews: IProductReview[];
   averageRating: number;
   reviewCount: number;
-  distribution?: IRatingDistribution[];
   isLoading?: boolean;
 }
 
@@ -21,7 +20,6 @@ export function ProductReviews({
   reviews,
   averageRating,
   reviewCount,
-  distribution,
   isLoading,
 }: ProductReviewsProps) {
   if (isLoading) {
@@ -43,23 +41,6 @@ export function ProductReviews({
           <StarRating rating={averageRating} size="lg" className="mt-2" />
           <p className="text-sm text-muted-foreground mt-1">{reviewCount} reviews</p>
         </div>
-
-        {distribution && (
-          <div className="flex-1 space-y-2">
-            {[5, 4, 3, 2, 1].map((stars) => {
-              const item = distribution?.find((d) => d.rating === stars);
-              const count = item?.count ?? 0;
-              const pct = item?.percentage ?? 0;
-              return (
-                <div key={stars} className="flex items-center gap-3">
-                  <span className="text-sm w-8 text-right">{stars} ★</span>
-                  <Progress value={pct} className="h-2 flex-1" />
-                  <span className="text-xs text-muted-foreground w-8">{count}</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       <Separator />
@@ -74,12 +55,12 @@ export function ProductReviews({
               <div className="flex items-start gap-3">
                 <Avatar className="h-9 w-9">
                   <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                    {review.userName?.charAt(0) ?? "U"}
+                    {review.customerName?.charAt(0) ?? "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{review.userName}</span>
+                    <span className="text-sm font-medium">{review.customerName}</span>
                     {review.isVerifiedPurchase && (
                       <span className="text-xs text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 rounded">
                         Verified
@@ -100,13 +81,6 @@ export function ProductReviews({
               )}
 
               <p className="text-sm text-muted-foreground">{review.comment}</p>
-
-              {review.helpfulCount > 0 && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <ThumbsUp className="h-3 w-3" />
-                  {review.helpfulCount} found this helpful
-                </div>
-              )}
 
               <Separator />
             </div>

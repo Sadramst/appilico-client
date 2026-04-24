@@ -50,7 +50,6 @@ export const resetPasswordSchema = z
 export const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(50),
   lastName: z.string().min(1, "Last name is required").max(50),
-  phoneNumber: z.string().optional(),
 });
 
 export const addressSchema = z.object({

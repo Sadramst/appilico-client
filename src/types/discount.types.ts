@@ -1,41 +1,47 @@
 export interface IDiscount {
   id: string;
+  code: string;
   name: string;
-  description?: string;
-  discountType: DiscountType;
-  discountValue: number;
-  minimumOrderAmount?: number;
-  maximumDiscountAmount?: number;
-  applicableTo: DiscountApplicableTo;
-  applicableIds: string[];
+  description: string | null;
+  discountType: number;
+  value: number;
+  minOrderAmount: number | null;
+  maxDiscountAmount: number | null;
   startDate: string;
   endDate: string;
+  usageLimit: number | null;
+  usedCount: number;
   isActive: boolean;
-  usageCount: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
-export type DiscountType = "Percentage" | "FixedAmount";
-
-export type DiscountApplicableTo =
-  | "AllProducts"
-  | "SpecificProducts"
-  | "SpecificCategories"
-  | "SpecificBrands";
+export const DiscountTypeLabels: Record<number, string> = {
+  0: "Percentage",
+  1: "Fixed",
+  2: "BuyXGetY",
+};
 
 export interface ICreateDiscountRequest {
+  code: string;
   name: string;
-  description?: string;
-  discountType: DiscountType;
-  discountValue: number;
-  minimumOrderAmount?: number;
-  maximumDiscountAmount?: number;
-  applicableTo: DiscountApplicableTo;
-  applicableIds: string[];
+  description?: string | null;
+  discountType: number;
+  value: number;
+  minOrderAmount?: number | null;
+  maxDiscountAmount?: number | null;
   startDate: string;
   endDate: string;
-  isActive: boolean;
+  usageLimit?: number | null;
 }
 
 export type IUpdateDiscountRequest = ICreateDiscountRequest;
+
+export interface IValidateDiscountRequest {
+  code: string;
+  orderAmount: number;
+}
+
+export interface IValidateDiscountResponse {
+  isValid: boolean;
+  discountAmount: number;
+  message: string;
+}

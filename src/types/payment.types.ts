@@ -1,38 +1,30 @@
 export interface IPayment {
   id: string;
   orderId: string;
-  orderNumber: string;
-  method: PaymentMethod;
-  status: PaymentStatus;
   amount: number;
-  currency: string;
-  transactionId?: string;
-  createdAt: string;
-  updatedAt: string;
+  paymentMethod: number;
+  transactionId: string | null;
+  status: number;
+  paidAt: string | null;
 }
 
-export type PaymentMethod =
-  | "CreditCard"
-  | "DebitCard"
-  | "BankTransfer"
-  | "CashOnDelivery"
-  | "PayPal";
-
-export type PaymentStatus =
-  | "Pending"
-  | "Completed"
-  | "Failed"
-  | "Refunded"
-  | "PartialRefund";
+export interface ICreatePaymentRequest {
+  orderId: string;
+  amount: number;
+  paymentMethod: number;
+  transactionId: string;
+}
 
 export interface IRefund {
   id: string;
   paymentId: string;
-  orderId: string;
   amount: number;
   reason: string;
-  status: RefundStatus;
+  status: number;
   createdAt: string;
 }
 
-export type RefundStatus = "Pending" | "Approved" | "Rejected" | "Completed";
+export interface ICreateRefundRequest {
+  amount: number;
+  reason: string;
+}

@@ -24,11 +24,11 @@ function ProductsContent() {
   const { data, isLoading } = useProducts({
     page,
     pageSize: 12,
-    search: search,
+    searchTerm: search,
   });
 
-  const products = data?.data?.items ?? [];
-  const totalPages = data?.data?.pagination?.totalPages ?? 1;
+  const products = data?.data ?? [];
+  const totalPages = data?.pagination?.totalPages ?? 1;
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -19,9 +19,9 @@ export function useCustomer(id: string) {
   });
 }
 
-export function useAddresses() {
+export function useMyCustomerProfile() {
   return useQuery({
-    queryKey: ["addresses"],
-    queryFn: () => customerService.getAddresses(),
+    queryKey: ["customer", "me"],
+    queryFn: () => customerService.getMe(),
   });
 }

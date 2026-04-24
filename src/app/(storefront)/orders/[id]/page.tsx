@@ -5,13 +5,12 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { PageHeader } from "@/components/shared/page-header";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
-import { OrderTimeline } from "@/components/order/order-timeline";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useOrder } from "@/hooks/use-orders";
 import { formatPrice, formatDate } from "@/lib/utils";
-import { ORDER_STATUS_COLORS, PAYMENT_STATUS_COLORS } from "@/lib/constants";
+import { OrderStatusLabels, PaymentStatusLabels, PaymentMethodLabels } from "@/types/order.types";
 
 export default function OrderDetailPage({
   params,
@@ -39,20 +38,13 @@ export default function OrderDetailPage({
       <Breadcrumbs />
       <PageHeader
         title={`Order #${order.orderNumber}`}
-        description={`Placed on ${formatDate(order.createdAt)}`}
+        description={`Placed on ${formatDate(order.orderDate)}`}
         className="mt-4"
       >
-        <Badge className={ORDER_STATUS_COLORS[order.status] ?? ""} variant="secondary">
-          {order.status}
+        <Badge variant="secondary">
+          {OrderStatusLabels[order.orderStatus] ?? "Unknown"}
         </Badge>
       </PageHeader>
-
-      {/* Timeline */}
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <OrderTimeline status={order.status} />
-        </CardContent>
-      </Card>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Items */}
@@ -70,9 +62,9 @@ export default function OrderDetailPage({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm truncate">{item.productName}</p>
-                      <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                      <p className="text-xs text-muted-foreground">Qty: {item.quantity} × {formatPrice(item.unitPrice)}</p>
                     </div>
-                    <span className="font-semibold text-sm">{formatPrice(item.subtotal)}</span>
+                    <span className="font-semibold text-sm">{formatPrice(item.totalPrice)}</span>
                   </div>
                 ))}
               </div>
@@ -89,7 +81,7 @@ export default function OrderDetailPage({
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>{formatPrice(order.subtotal)}</span>
+                <span>{formatPrice(order.subTotal)}</span>
               </div>
               {order.discountAmount > 0 && (
                 <div className="flex justify-between text-emerald-600">
@@ -108,7 +100,7 @@ export default function OrderDetailPage({
               <Separator />
               <div className="flex justify-between font-semibold text-base">
                 <span>Total</span>
-                <span>{formatPrice(order.total)}</span>
+                <span>{formatPrice(order.totalAmount)}</span>
               </div>
             </CardContent>
           </Card>
@@ -120,30 +112,14 @@ export default function OrderDetailPage({
             <CardContent className="text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Method</span>
-                <span>{order.paymentMethod}</span>
+                <span>{PaymentMethodLabels[order.paymentMethod] ?? "Unknown"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Status</span>
-                <Badge variant="secondary" className={PAYMENT_STATUS_COLORS[order.paymentStatus] ?? ""}>
-                  {order.paymentStatus}
+                <Badge variant="secondary">
+                  {PaymentStatusLabels[order.paymentStatus] ?? "Unknown"}
                 </Badge>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Shipping Address</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              <p className="font-medium text-foreground">{order.shippingAddress.fullName}</p>
-              <p>{order.shippingAddress.addressLine1}</p>
-              {order.shippingAddress.addressLine2 && <p>{order.shippingAddress.addressLine2}</p>}
-              <p>
-                {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
-                {order.shippingAddress.postalCode}
-              </p>
-              <p>{order.shippingAddress.country}</p>
             </CardContent>
           </Card>
         </div>

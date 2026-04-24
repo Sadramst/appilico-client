@@ -1,86 +1,75 @@
 export interface IOrder {
   id: string;
   orderNumber: string;
-  userId: string;
+  customerId: string;
   customerName: string;
-  customerEmail: string;
-  status: OrderStatus;
-  items: IOrderItem[];
-  shippingAddress: IOrderAddress;
-  billingAddress?: IOrderAddress;
-  paymentMethod: string;
-  paymentStatus: PaymentStatus;
-  subtotal: number;
+  orderStatus: number;
+  subTotal: number;
   discountAmount: number;
   taxAmount: number;
   shippingAmount: number;
-  total: number;
-  voucherCode?: string;
-  notes?: string;
-  trackingNumber?: string;
-  statusHistory: IOrderStatusHistory[];
-  createdAt: string;
-  updatedAt: string;
+  totalAmount: number;
+  paymentStatus: number;
+  paymentMethod: number;
+  orderDate: string;
+  voucherCode: string | null;
+  notes: string | null;
+  items: IOrderItem[];
 }
 
 export interface IOrderItem {
   id: string;
   productId: string;
   productName: string;
-  productImage: string;
-  variantName?: string;
-  sku: string;
-  price: number;
+  unitPrice: number;
   quantity: number;
-  subtotal: number;
-}
-
-export interface IOrderAddress {
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
+  totalPrice: number;
+  discount: number;
 }
 
 export interface IOrderStatusHistory {
-  id: string;
-  status: OrderStatus;
-  note?: string;
-  createdAt: string;
-  createdBy: string;
+  oldStatus: number;
+  newStatus: number;
+  notes: string | null;
+  changedAt: string;
 }
 
-export type OrderStatus =
-  | "Pending"
-  | "Confirmed"
-  | "Processing"
-  | "Shipped"
-  | "Delivered"
-  | "Cancelled"
-  | "Refunded"
-  | "Returned";
+export const OrderStatusLabels: Record<number, string> = {
+  0: "Pending",
+  1: "Confirmed",
+  2: "Processing",
+  3: "Shipped",
+  4: "Delivered",
+  5: "Cancelled",
+  6: "Returned",
+  7: "Refunded",
+};
 
-export type PaymentStatus =
-  | "Pending"
-  | "Paid"
-  | "Failed"
-  | "Refunded"
-  | "PartialRefund";
+export const PaymentStatusLabels: Record<number, string> = {
+  0: "Pending",
+  1: "Paid",
+  2: "Failed",
+  3: "Refunded",
+  4: "PartiallyRefunded",
+};
+
+export const PaymentMethodLabels: Record<number, string> = {
+  0: "CreditCard",
+  1: "DebitCard",
+  2: "PayPal",
+  3: "BankTransfer",
+  4: "CashOnDelivery",
+};
 
 export interface ICreateOrderRequest {
   shippingAddressId: string;
   billingAddressId?: string;
-  paymentMethod: string;
-  voucherCode?: string;
-  notes?: string;
+  paymentMethod: number;
+  voucherCode?: string | null;
+  notes?: string | null;
 }
 
 export interface IUpdateOrderStatusRequest {
-  status: OrderStatus;
-  note?: string;
-  trackingNumber?: string;
+  newStatus: number;
+  notes?: string | null;
 }

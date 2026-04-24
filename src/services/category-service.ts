@@ -54,18 +54,4 @@ export const categoryService = {
     );
     return response.data;
   },
-
-  uploadImage: async (
-    id: string,
-    file: File
-  ): Promise<IApiResponse<{ url: string }>> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await apiClient.post<IApiResponse<{ url: string }>>(
-      `${CATEGORIES_BASE}/${id}/image`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-    return response.data;
-  },
 };

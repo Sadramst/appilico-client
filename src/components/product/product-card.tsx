@@ -19,7 +19,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
-  const stockStatus = getStockStatus(product.stockQuantity, product.lowStockThreshold);
+  const stockStatus = getStockStatus(product.stockQuantity);
   const primaryImage = product.images.find((img) => img.isPrimary) ?? product.images[0];
 
   return (
@@ -33,10 +33,10 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         <CardContent className="p-0">
           {/* Image */}
           <div className="relative aspect-square overflow-hidden bg-muted">
-            <Link href={`/products/${product.slug}`}>
+            <Link href={`/products/${product.id}`}>
               {primaryImage ? (
                 <ImageWithFallback
-                  src={primaryImage.url}
+                  src={primaryImage.imageUrl}
                   alt={primaryImage.altText || product.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -51,11 +51,6 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
 
             {/* Badges */}
             <div className="absolute top-2 left-2 flex flex-col gap-1">
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <Badge variant="destructive" className="text-xs">
-                  Sale
-                </Badge>
-              )}
               {product.isFeatured && (
                 <Badge className="text-xs bg-amber-500 hover:bg-amber-600">
                   Featured
@@ -83,7 +78,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               >
                 <Heart className="h-3.5 w-3.5" />
               </Button>
-              <Link href={`/products/${product.slug}`}>
+              <Link href={`/products/${product.id}`}>
                 <Button
                   size="icon"
                   variant="secondary"
@@ -115,7 +110,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             {product.brandName && (
               <p className="text-xs text-muted-foreground mb-1">{product.brandName}</p>
             )}
-            <Link href={`/products/${product.slug}`}>
+            <Link href={`/products/${product.id}`}>
               <h3 className="font-medium text-sm line-clamp-2 hover:text-primary transition-colors">
                 {product.name}
               </h3>
@@ -125,14 +120,13 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               <StarRating
                 rating={product.averageRating}
                 size="sm"
-                count={product.reviewCount}
+                count={product.totalReviews}
               />
             </div>
 
             <div className="mt-2">
               <PriceTag
-                price={product.price}
-                compareAtPrice={product.compareAtPrice}
+                price={product.basePrice}
                 size="sm"
               />
             </div>

@@ -4,12 +4,11 @@ import { DollarSign, ShoppingCart, Users, Package } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatsCard, StatsCardSkeleton } from "@/components/admin/stats-card";
 import { RevenueChart } from "@/components/admin/revenue-chart";
-import { RecentOrdersTable } from "@/components/admin/recent-orders-table";
 import { TopProductsList } from "@/components/admin/top-products-list";
 import { useDashboard } from "@/hooks/use-dashboard";
 
 export default function DashboardPage() {
-  const { data, isLoading } = useDashboard("monthly");
+  const { data, isLoading } = useDashboard();
   const stats = data?.data;
 
   return (
@@ -37,13 +36,13 @@ export default function DashboardPage() {
             />
             <StatsCard
               title="Total Customers"
-              value={stats?.salesSummary?.totalCustomers ?? 0}
+              value={stats?.customerStats?.totalCustomers ?? 0}
               icon={Users}
               index={2}
             />
             <StatsCard
-              title="Total Products"
-              value={stats?.salesSummary?.totalProducts ?? 0}
+              title="Active Customers"
+              value={stats?.customerStats?.activeCustomers ?? 0}
               icon={Package}
               index={3}
             />
@@ -55,7 +54,6 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <RevenueChart data={stats?.revenueData ?? []} isLoading={isLoading} />
-          <RecentOrdersTable orders={stats?.recentOrders ?? []} isLoading={isLoading} />
         </div>
         <div>
           <TopProductsList products={stats?.topProducts ?? []} isLoading={isLoading} />

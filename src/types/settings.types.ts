@@ -2,13 +2,10 @@ export interface IAppSetting {
   id: string;
   key: string;
   value: string;
-  description?: string;
   group: string;
-  updatedAt: string;
-  updatedBy: string;
+  description: string | null;
 }
 
-export interface IUpdateSettingRequest {
-  key: string;
-  value: string;
+export interface IUpdateSettingsRequest {
+  settings: { key: string; value: string }[];
 }

@@ -6,7 +6,6 @@ import type {
   IRegisterRequest,
   IForgotPasswordRequest,
   IResetPasswordRequest,
-  IChangePasswordRequest,
   IUpdateProfileRequest,
   IUser,
 } from "@/types/auth.types";
@@ -46,14 +45,6 @@ export const authService = {
     return response.data;
   },
 
-  changePassword: async (data: IChangePasswordRequest): Promise<IApiResponse<null>> => {
-    const response = await apiClient.post<IApiResponse<null>>(
-      `${AUTH_BASE}/change-password`,
-      data
-    );
-    return response.data;
-  },
-
   getProfile: async (): Promise<IApiResponse<IUser>> => {
     const response = await apiClient.get<IApiResponse<IUser>>(
       `${AUTH_BASE}/profile`
@@ -69,21 +60,18 @@ export const authService = {
     return response.data;
   },
 
-  uploadAvatar: async (file: File): Promise<IApiResponse<{ url: string }>> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await apiClient.post<IApiResponse<{ url: string }>>(
-      `${AUTH_BASE}/avatar`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-    return response.data;
-  },
-
   refreshToken: async (refreshToken: string): Promise<IApiResponse<IAuthResponse>> => {
     const response = await apiClient.post<IApiResponse<IAuthResponse>>(
       `${AUTH_BASE}/refresh`,
       { refreshToken }
+    );
+    return response.data;
+  },
+
+  revokeToken: async (token: string): Promise<IApiResponse<null>> => {
+    const response = await apiClient.post<IApiResponse<null>>(
+      `${AUTH_BASE}/revoke`,
+      { token }
     );
     return response.data;
   },

@@ -1,37 +1,25 @@
 export interface ICart {
   id: string;
-  userId?: string;
+  customerId: string;
   items: ICartItem[];
-  subtotal: number;
-  discountAmount: number;
-  taxAmount: number;
-  shippingAmount: number;
   total: number;
-  voucherCode?: string;
-  voucherDiscount?: number;
-  itemCount: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface ICartItem {
   id: string;
   productId: string;
   productName: string;
-  productImage: string;
-  productSlug: string;
-  variantId?: string;
-  variantName?: string;
-  price: number;
-  compareAtPrice?: number;
+  imageUrl: string | null;
+  variantId: string | null;
+  variantName: string | null;
   quantity: number;
-  subtotal: number;
-  stockQuantity: number;
+  unitPrice: number;
+  lineTotal: number;
 }
 
 export interface IAddToCartRequest {
   productId: string;
-  variantId?: string;
+  variantId?: string | null;
   quantity: number;
 }
 

@@ -6,10 +6,9 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductInfo } from "@/components/product/product-info";
 import { ProductReviews } from "@/components/product/product-reviews";
-import { ProductGrid } from "@/components/product/product-grid";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
 import { Separator } from "@/components/ui/separator";
-import { useProduct, useRelatedProducts } from "@/hooks/use-products";
+import { useProduct } from "@/hooks/use-products";
 import { useProductReviews } from "@/hooks/use-reviews";
 
 export default function ProductDetailPage({
@@ -26,8 +25,6 @@ export default function ProductDetailPage({
     { page: 1, pageSize: 10 }
   );
 
-  const { data: relatedData } = useRelatedProducts(product?.id ?? "");
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -40,8 +37,7 @@ export default function ProductDetailPage({
     notFound();
   }
 
-  const reviews = reviewsData?.data?.items ?? [];
-  const relatedProducts = relatedData?.data ?? [];
+  const reviews = reviewsData?.data ?? [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -59,21 +55,10 @@ export default function ProductDetailPage({
         <ProductReviews
           reviews={reviews}
           averageRating={product.averageRating}
-          reviewCount={product.reviewCount}
+          reviewCount={product.totalReviews}
           isLoading={reviewsLoading}
         />
       </section>
-
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <>
-          <Separator className="my-12" />
-          <section>
-            <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-            <ProductGrid products={relatedProducts} />
-          </section>
-        </>
-      )}
     </div>
   );
 }

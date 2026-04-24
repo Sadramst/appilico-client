@@ -8,10 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDiscounts } from "@/hooks/use-discounts";
 import { formatDate } from "@/lib/utils";
+import { DiscountTypeLabels } from "@/types/discount.types";
 
 export default function AdminDiscountsPage() {
   const { data, isLoading } = useDiscounts({ page: 1, pageSize: 20 });
-  const discounts = data?.data?.items ?? [];
+  const discounts = data?.data ?? [];
 
   return (
     <div>
@@ -31,7 +32,7 @@ export default function AdminDiscountsPage() {
               {discounts.map((d) => (
                 <tr key={d.id} className="border-b hover:bg-muted/50">
                   <td className="py-3 font-medium">{d.name}</td>
-                  <td className="py-3">{d.discountType === "Percentage" ? `${d.discountValue}%` : `$${d.discountValue}`}</td>
+                  <td className="py-3">{d.discountType === 0 ? `${d.value}%` : `$${d.value}`}</td>
                   <td className="py-3 hidden md:table-cell text-muted-foreground">{formatDate(d.startDate)} — {formatDate(d.endDate)}</td>
                   <td className="py-3"><Badge variant={d.isActive ? "default" : "secondary"}>{d.isActive ? "Active" : "Inactive"}</Badge></td>
                 </tr>

@@ -1,7 +1,6 @@
 "use client";
 
 import { create } from "zustand";
-import type { ProductSortBy } from "@/types/product.types";
 
 interface SearchState {
   query: string;
@@ -11,14 +10,14 @@ interface SearchState {
   maxPrice: number | null;
   minRating: number | null;
   inStock: boolean;
-  sortBy: ProductSortBy;
+  sortBy: string;
   setQuery: (query: string) => void;
   setCategoryId: (id: string | null) => void;
   setBrandId: (id: string | null) => void;
   setPriceRange: (min: number | null, max: number | null) => void;
   setMinRating: (rating: number | null) => void;
   setInStock: (inStock: boolean) => void;
-  setSortBy: (sortBy: ProductSortBy) => void;
+  setSortBy: (sortBy: string) => void;
   clearFilters: () => void;
   hasActiveFilters: () => boolean;
 }

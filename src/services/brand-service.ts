@@ -29,15 +29,4 @@ export const brandService = {
     const response = await apiClient.delete<IApiResponse<null>>(`${BRANDS_BASE}/${id}`);
     return response.data;
   },
-
-  uploadLogo: async (id: string, file: File): Promise<IApiResponse<{ url: string }>> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await apiClient.post<IApiResponse<{ url: string }>>(
-      `${BRANDS_BASE}/${id}/logo`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-    return response.data;
-  },
 };

@@ -1,16 +1,17 @@
 import apiClient from "./api-client";
-import type { IApiResponse, IPaginatedResponse, IQueryParams } from "@/types/api.types";
+import type { IApiResponse, IQueryParams } from "@/types/api.types";
 import type {
   IOrder,
   ICreateOrderRequest,
   IUpdateOrderStatusRequest,
+  IOrderStatusHistory,
 } from "@/types/order.types";
 
 const ORDERS_BASE = "/orders";
 
 export const orderService = {
-  getAll: async (params?: IQueryParams): Promise<IApiResponse<IPaginatedResponse<IOrder>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IOrder>>>(ORDERS_BASE, { params });
+  getAll: async (params?: IQueryParams): Promise<IApiResponse<IOrder[]>> => {
+    const response = await apiClient.get<IApiResponse<IOrder[]>>(ORDERS_BASE, { params });
     return response.data;
   },
 
@@ -19,8 +20,8 @@ export const orderService = {
     return response.data;
   },
 
-  getMyOrders: async (params?: IQueryParams): Promise<IApiResponse<IPaginatedResponse<IOrder>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<IOrder>>>(`${ORDERS_BASE}/my`, { params });
+  getMyOrders: async (params?: IQueryParams): Promise<IApiResponse<IOrder[]>> => {
+    const response = await apiClient.get<IApiResponse<IOrder[]>>(`${ORDERS_BASE}/my`, { params });
     return response.data;
   },
 
@@ -31,6 +32,11 @@ export const orderService = {
 
   updateStatus: async (id: string, data: IUpdateOrderStatusRequest): Promise<IApiResponse<IOrder>> => {
     const response = await apiClient.put<IApiResponse<IOrder>>(`${ORDERS_BASE}/${id}/status`, data);
+    return response.data;
+  },
+
+  getHistory: async (id: string): Promise<IApiResponse<IOrderStatusHistory[]>> => {
+    const response = await apiClient.get<IApiResponse<IOrderStatusHistory[]>>(`${ORDERS_BASE}/${id}/history`);
     return response.data;
   },
 

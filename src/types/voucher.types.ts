@@ -2,55 +2,56 @@ export interface IVoucher {
   id: string;
   code: string;
   description: string;
-  discountType: DiscountType;
-  discountValue: number;
-  minimumOrderAmount?: number;
-  maximumDiscountAmount?: number;
-  usageLimit?: number;
-  usageCount: number;
-  usageLimitPerUser?: number;
+  voucherType: number;
+  value: number;
+  valueType: number;
+  minOrderAmount: number | null;
+  maxRedemptions: number | null;
+  currentRedemptions: number;
   startDate: string;
-  endDate: string;
+  expiryDate: string;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  isSingleUse: boolean;
 }
 
-export type DiscountType = "Percentage" | "FixedAmount";
+export const VoucherTypeLabels: Record<number, string> = {
+  0: "Gift",
+  1: "Promo",
+  2: "Reward",
+};
 
-export interface IVoucherRedemption {
-  id: string;
-  voucherId: string;
-  voucherCode: string;
-  userId: string;
-  orderId: string;
-  discountAmount: number;
-  redeemedAt: string;
-}
+export const VoucherValueTypeLabels: Record<number, string> = {
+  0: "Percentage",
+  1: "Fixed",
+};
 
 export interface ICreateVoucherRequest {
   code: string;
   description: string;
-  discountType: DiscountType;
-  discountValue: number;
-  minimumOrderAmount?: number;
-  maximumDiscountAmount?: number;
-  usageLimit?: number;
-  usageLimitPerUser?: number;
+  voucherType: number;
+  value: number;
+  valueType: number;
+  minOrderAmount?: number | null;
+  maxRedemptions?: number | null;
   startDate: string;
-  endDate: string;
-  isActive: boolean;
+  expiryDate: string;
+  isSingleUse?: boolean;
 }
 
 export type IUpdateVoucherRequest = ICreateVoucherRequest;
 
 export interface IValidateVoucherRequest {
   code: string;
-  orderTotal: number;
+  orderAmount: number;
 }
 
 export interface IValidateVoucherResponse {
   isValid: boolean;
   discountAmount: number;
   message: string;
+}
+
+export interface IRedeemVoucherRequest {
+  code: string;
+  orderId: string;
 }

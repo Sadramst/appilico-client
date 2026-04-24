@@ -1,21 +1,15 @@
 export interface IBrand {
   id: string;
   name: string;
-  slug: string;
-  description?: string;
-  logoUrl?: string;
-  websiteUrl?: string;
+  description: string | null;
+  logoUrl: string | null;
   isActive: boolean;
-  productCount: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface ICreateBrandRequest {
   name: string;
-  description?: string;
-  websiteUrl?: string;
-  isActive: boolean;
+  description?: string | null;
+  logoUrl?: string | null;
 }
 
 export type IUpdateBrandRequest = ICreateBrandRequest;

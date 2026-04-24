@@ -51,17 +51,17 @@ export default function WishlistPage() {
                   >
                     <Card className="overflow-hidden group">
                       <CardContent className="p-0">
-                        <Link href={`/products/${item.slug}`}>
+                        <Link href={`/products/${item.productId}`}>
                           <div className="aspect-square bg-muted flex items-center justify-center text-3xl font-bold text-muted-foreground/20">
-                            {item.name.charAt(0)}
+                            {item.productName.charAt(0)}
                           </div>
                         </Link>
                         <div className="p-3 space-y-2">
                           <Link
-                            href={`/products/${item.slug}`}
+                            href={`/products/${item.productId}`}
                             className="font-medium text-sm line-clamp-2 hover:text-primary transition-colors"
                           >
-                            {item.name}
+                            {item.productName}
                           </Link>
                           <PriceTag price={item.price} size="sm" />
                           <div className="flex gap-2">
@@ -74,7 +74,7 @@ export default function WishlistPage() {
                               variant="outline"
                               className="h-8 w-8 text-destructive hover:text-destructive"
                               onClick={() => {
-                                remove(item.id);
+                                remove(item.productId);
                               }}
                             >
                               <Trash2 className="h-3.5 w-3.5" />

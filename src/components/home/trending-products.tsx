@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProductCard, ProductCardSkeleton } from "@/components/product/product-card";
-import { useTrendingProducts } from "@/hooks/use-products";
+import { useFeaturedProducts } from "@/hooks/use-products";
 
 export function TrendingProducts() {
-  const { data, isLoading } = useTrendingProducts();
+  const { data, isLoading } = useFeaturedProducts();
   const products = data?.data ?? [];
 
   return (

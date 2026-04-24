@@ -1,12 +1,12 @@
 import apiClient from "./api-client";
-import type { IApiResponse, IPaginatedResponse, IQueryParams } from "@/types/api.types";
-import type { ISpecialOffer, ICreateOfferRequest, IUpdateOfferRequest } from "@/types/offer.types";
+import type { IApiResponse, IQueryParams } from "@/types/api.types";
+import type { ISpecialOffer, ICreateOfferRequest, IUpdateOfferRequest, IAddOfferProductsRequest } from "@/types/offer.types";
 
 const OFFERS_BASE = "/offers";
 
 export const offerService = {
-  getAll: async (params?: IQueryParams): Promise<IApiResponse<IPaginatedResponse<ISpecialOffer>>> => {
-    const response = await apiClient.get<IApiResponse<IPaginatedResponse<ISpecialOffer>>>(OFFERS_BASE, { params });
+  getAll: async (params?: IQueryParams): Promise<IApiResponse<ISpecialOffer[]>> => {
+    const response = await apiClient.get<IApiResponse<ISpecialOffer[]>>(OFFERS_BASE, { params });
     return response.data;
   },
 
@@ -35,14 +35,8 @@ export const offerService = {
     return response.data;
   },
 
-  uploadBanner: async (id: string, file: File): Promise<IApiResponse<{ url: string }>> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await apiClient.post<IApiResponse<{ url: string }>>(
-      `${OFFERS_BASE}/${id}/banner`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+  addProducts: async (offerId: string, data: IAddOfferProductsRequest): Promise<IApiResponse<null>> => {
+    const response = await apiClient.post<IApiResponse<null>>(`${OFFERS_BASE}/${offerId}/products`, data);
     return response.data;
   },
 };

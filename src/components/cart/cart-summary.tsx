@@ -27,7 +27,7 @@ export function CartSummary() {
   const handleApplyVoucher = () => {
     if (!code.trim()) return;
     validateVoucher.mutate(
-      { code: code.trim(), orderTotal: subtotal },
+      { code: code.trim(), orderAmount: subtotal },
       {
         onSuccess: (data) => {
           if (data.data) {

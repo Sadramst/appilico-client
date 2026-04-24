@@ -52,9 +52,9 @@ export default function CartPage() {
                 className="border rounded-xl p-4 flex gap-4"
               >
                 <div className="relative h-24 w-24 shrink-0 rounded-lg overflow-hidden bg-muted">
-                  {item.productImage ? (
+                  {item.imageUrl ? (
                     <ImageWithFallback
-                      src={item.productImage}
+                      src={item.imageUrl}
                       alt={item.productName}
                       fill
                       className="object-cover"
@@ -69,7 +69,7 @@ export default function CartPage() {
 
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/products/${item.productSlug}`}
+                    href={`/products/${item.productId}`}
                     className="font-medium hover:text-primary transition-colors line-clamp-1"
                   >
                     {item.productName}
@@ -77,7 +77,7 @@ export default function CartPage() {
                   {item.variantName && (
                     <p className="text-xs text-muted-foreground mt-0.5">{item.variantName}</p>
                   )}
-                  <p className="text-sm font-semibold mt-1">{formatPrice(item.price)}</p>
+                  <p className="text-sm font-semibold mt-1">{formatPrice(item.unitPrice)}</p>
 
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center border rounded-md">
@@ -98,7 +98,6 @@ export default function CartPage() {
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        disabled={item.quantity >= item.stockQuantity}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -106,7 +105,7 @@ export default function CartPage() {
 
                     <div className="flex items-center gap-4">
                       <span className="font-semibold">
-                        {formatPrice(item.price * item.quantity)}
+                        {formatPrice(item.unitPrice * item.quantity)}
                       </span>
                       <Button
                         variant="ghost"

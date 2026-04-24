@@ -38,7 +38,7 @@ export default function RegisterPage() {
   });
 
   const onSubmit = (data: TRegisterFormData) => {
-    registerUser({ ...data, acceptTerms: true });
+    registerUser(data);
   };
 
   return (

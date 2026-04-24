@@ -8,10 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllOffers } from "@/hooks/use-offers";
 import { formatDate } from "@/lib/utils";
+import { OfferTypeLabels } from "@/types/offer.types";
 
 export default function AdminOffersPage() {
   const { data, isLoading } = useAllOffers({ page: 1, pageSize: 20 });
-  const offers = data?.data?.items ?? [];
+  const offers = data?.data ?? [];
 
   return (
     <div>
@@ -30,8 +31,8 @@ export default function AdminOffersPage() {
             <tbody>
               {offers.map((offer) => (
                 <tr key={offer.id} className="border-b hover:bg-muted/50">
-                  <td className="py-3 font-medium">{offer.title}</td>
-                  <td className="py-3 hidden sm:table-cell text-muted-foreground">{offer.discountType}</td>
+                  <td className="py-3 font-medium">{offer.name}</td>
+                  <td className="py-3 hidden sm:table-cell text-muted-foreground">{OfferTypeLabels[offer.offerType] ?? "Unknown"}</td>
                   <td className="py-3 hidden md:table-cell text-muted-foreground">{formatDate(offer.startDate)} — {formatDate(offer.endDate)}</td>
                   <td className="py-3"><Badge variant={offer.isActive ? "default" : "secondary"}>{offer.isActive ? "Active" : "Inactive"}</Badge></td>
                 </tr>

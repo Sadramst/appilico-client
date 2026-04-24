@@ -26,8 +26,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const { addItem } = useCartStore();
 
   const stockStatus = getStockStatus(
-    selectedVariant?.stockQuantity ?? product.stockQuantity,
-    product.lowStockThreshold
+    selectedVariant?.stockQuantity ?? product.stockQuantity
   );
 
   const handleAddToCart = () => {
@@ -35,14 +34,12 @@ export function ProductInfo({ product }: ProductInfoProps) {
       id: selectedVariant?.id ?? product.id,
       productId: product.id,
       productName: product.name,
-      productSlug: product.slug,
-      productImage: product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url ?? "",
-      variantId: selectedVariant?.id,
-      variantName: selectedVariant?.name,
-      price: selectedVariant?.price ?? product.price,
+      imageUrl: product.images.find((i) => i.isPrimary)?.imageUrl ?? product.images[0]?.imageUrl ?? null,
+      variantId: selectedVariant?.id ?? null,
+      variantName: selectedVariant?.variantName ?? null,
+      unitPrice: selectedVariant?.price ?? product.basePrice,
       quantity,
-      subtotal: (selectedVariant?.price ?? product.price) * quantity,
-      stockQuantity: selectedVariant?.stockQuantity ?? product.stockQuantity,
+      lineTotal: (selectedVariant?.price ?? product.basePrice) * quantity,
     });
     toast.success("Added to cart", { description: `${product.name} × ${quantity}` });
   };
@@ -66,23 +63,22 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{product.name}</h1>
 
         <div className="flex items-center gap-4 mt-3">
-          <StarRating rating={product.averageRating} showValue count={product.reviewCount} />
+          <StarRating rating={product.averageRating} showValue count={product.totalReviews} />
           <Separator orientation="vertical" className="h-4" />
           <span className="text-sm text-muted-foreground">
-            {formatNumber(product.salesCount)} sold
+            {product.totalReviews} reviews
           </span>
         </div>
       </div>
 
       {/* Price */}
       <PriceTag
-        price={selectedVariant?.price ?? product.price}
-        compareAtPrice={product.compareAtPrice}
+        price={selectedVariant?.price ?? product.basePrice}
         size="lg"
       />
 
-      {/* Short Description */}
-      <p className="text-muted-foreground">{product.shortDescription}</p>
+      {/* Description */}
+      <p className="text-muted-foreground">{product.description}</p>
 
       <Separator />
 
@@ -92,7 +88,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <h3 className="text-sm font-semibold">Variant</h3>
           <div className="flex flex-wrap gap-2">
             {product.variants
-              .filter((v) => v.isActive)
               .map((variant) => (
                 <Button
                   key={variant.id}
@@ -106,7 +101,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
                   className="gap-2"
                 >
                   {selectedVariant?.id === variant.id && <Check className="h-3 w-3" />}
-                  {variant.name}
+                  {variant.variantName}
                   {variant.stockQuantity === 0 && (
                     <span className="text-xs">(Sold Out)</span>
                   )}
@@ -201,9 +196,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <Tabs defaultValue="description" className="w-full">
         <TabsList className="w-full justify-start">
           <TabsTrigger value="description">Description</TabsTrigger>
-          {product.specifications.length > 0 && (
-            <TabsTrigger value="specifications">Specifications</TabsTrigger>
-          )}
           <TabsTrigger value="shipping">Shipping</TabsTrigger>
         </TabsList>
         <TabsContent value="description" className="mt-4">
@@ -212,18 +204,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
             dangerouslySetInnerHTML={{ __html: product.description }}
           />
         </TabsContent>
-        {product.specifications.length > 0 && (
-          <TabsContent value="specifications" className="mt-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {product.specifications.map((spec) => (
-                <div key={spec.key} className="flex justify-between p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">{spec.key}</span>
-                  <span className="text-sm font-medium">{spec.value}</span>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-        )}
         <TabsContent value="shipping" className="mt-4">
           <div className="space-y-3 text-sm text-muted-foreground">
             <p>Free standard shipping on orders over $50.</p>
@@ -232,17 +212,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Tags */}
-      {product.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {product.tags.map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

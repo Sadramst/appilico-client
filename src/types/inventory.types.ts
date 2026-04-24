@@ -2,47 +2,34 @@ export interface IInventoryTransaction {
   id: string;
   productId: string;
   productName: string;
-  productSku: string;
-  variantId?: string;
-  variantName?: string;
-  type: InventoryTransactionType;
+  variantId: string | null;
+  transactionType: number;
   quantity: number;
-  previousStock: number;
-  newStock: number;
-  reason?: string;
-  createdBy: string;
+  reference: string | null;
+  notes: string | null;
   createdAt: string;
 }
 
-export type InventoryTransactionType =
-  | "StockIn"
-  | "StockOut"
-  | "Adjustment"
-  | "Return"
-  | "Damaged";
+export const InventoryTransactionTypeLabels: Record<number, string> = {
+  0: "StockIn",
+  1: "StockOut",
+  2: "Adjustment",
+  3: "Return",
+};
 
 export interface IStockItem {
-  productId: string;
-  productName: string;
-  productSku: string;
-  productImage: string;
-  currentStock: number;
-  lowStockThreshold: number;
-  isLowStock: boolean;
-  variants: IVariantStock[];
-}
-
-export interface IVariantStock {
-  variantId: string;
-  variantName: string;
+  id: string;
+  name: string;
   sku: string;
-  currentStock: number;
+  stockQuantity: number;
+  minStockLevel: number;
 }
 
 export interface IAdjustStockRequest {
   productId: string;
-  variantId?: string;
+  variantId?: string | null;
+  transactionType: number;
   quantity: number;
-  type: InventoryTransactionType;
-  reason?: string;
+  reference?: string | null;
+  notes?: string | null;
 }

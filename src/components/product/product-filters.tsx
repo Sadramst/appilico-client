@@ -27,7 +27,6 @@ import { useSearchStore } from "@/stores/search-store";
 import { useCategories } from "@/hooks/use-categories";
 import { useBrands } from "@/hooks/use-brands";
 import { SORT_OPTIONS } from "@/lib/constants";
-import type { ProductSortBy } from "@/types/product.types";
 
 export function ProductFilters() {
   const router = useRouter();
@@ -68,7 +67,7 @@ export function ProductFilters() {
       {/* Sort */}
       <div className="space-y-2">
         <Label>Sort By</Label>
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as ProductSortBy)}>
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v ?? "newest")}>
           <SelectTrigger>
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>

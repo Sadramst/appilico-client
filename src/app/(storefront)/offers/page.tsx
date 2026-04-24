@@ -45,7 +45,7 @@ export default function OffersPage() {
                         <Clock className="h-3 w-3 mr-1" />
                         Limited Time
                       </Badge>
-                      <h3 className="text-2xl font-bold mb-2">{offer.title}</h3>
+                      <h3 className="text-2xl font-bold mb-2">{offer.name}</h3>
                       <p className="text-white/80 text-sm">{offer.description}</p>
                     </div>
 

@@ -14,21 +14,6 @@ export function useProductReviews(productId: string, params?: IQueryParams) {
   });
 }
 
-export function useRatingDistribution(productId: string) {
-  return useQuery({
-    queryKey: ["reviews", "distribution", productId],
-    queryFn: () => reviewService.getRatingDistribution(productId),
-    enabled: !!productId,
-  });
-}
-
-export function useMyReviews(params?: IQueryParams) {
-  return useQuery({
-    queryKey: ["my-reviews", params],
-    queryFn: () => reviewService.getMyReviews(params),
-  });
-}
-
 export function useCreateReview() {
   const queryClient = useQueryClient();
   return useMutation({

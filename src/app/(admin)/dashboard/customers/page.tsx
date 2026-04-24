@@ -9,7 +9,7 @@ import { formatDate, getInitials } from "@/lib/utils";
 
 export default function AdminCustomersPage() {
   const { data, isLoading } = useCustomers({ page: 1, pageSize: 20 });
-  const customers = data?.data?.items ?? [];
+  const customers = data?.data ?? [];
 
   return (
     <div>
@@ -41,15 +41,15 @@ export default function AdminCustomersPage() {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                          {getInitials(customer.fullName)}
+                          {getInitials(`${customer.firstName} ${customer.lastName}`)}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-medium">{customer.fullName}</span>
+                      <span className="font-medium">{customer.firstName} {customer.lastName}</span>
                     </div>
                   </td>
                   <td className="py-3 hidden sm:table-cell text-muted-foreground">{customer.email}</td>
-                  <td className="py-3 hidden md:table-cell">{customer.totalOrders}</td>
-                  <td className="py-3 hidden md:table-cell text-muted-foreground">{formatDate(customer.createdAt)}</td>
+                  <td className="py-3 hidden md:table-cell">{customer.totalPurchases}</td>
+                  <td className="py-3 hidden md:table-cell text-muted-foreground">{formatDate(customer.joinDate)}</td>
                 </tr>
               ))}
             </tbody>
