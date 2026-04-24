@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { voucherService } from "@/services/voucher-service";
 import type { IValidateVoucherRequest } from "@/types/voucher.types";
 
-export function useAllVouchers(params?: { page?: number; pageSize?: number }) {
+export function useAllVouchers(params?: { pageNumber?: number; pageSize?: number }) {
   return useQuery({
     queryKey: ["vouchers", params],
     queryFn: () => voucherService.getAll(params),

@@ -87,21 +87,19 @@ export function ProductFilters() {
       {categories.length > 0 && (
         <div className="space-y-3">
           <Label>Category</Label>
-          <ScrollArea className="max-h-40">
-            <div className="space-y-2">
-              {categories.map((cat) => (
-                <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
-                  <Checkbox
-                    checked={categoryId === cat.id}
-                    onCheckedChange={(checked) =>
-                      setCategoryId(checked ? cat.id : null)
-                    }
-                  />
-                  <span className="text-sm">{cat.name}</span>
-                </label>
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
+            {categories.map((cat) => (
+              <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
+                <Checkbox
+                  checked={categoryId === cat.id}
+                  onCheckedChange={(checked) =>
+                    setCategoryId(checked ? cat.id : null)
+                  }
+                />
+                <span className="text-sm">{cat.name}</span>
+              </label>
+            ))}
+          </div>
         </div>
       )}
 
@@ -111,21 +109,19 @@ export function ProductFilters() {
       {brands.length > 0 && (
         <div className="space-y-3">
           <Label>Brand</Label>
-          <ScrollArea className="max-h-40">
-            <div className="space-y-2">
-              {brands.map((brand) => (
-                <label key={brand.id} className="flex items-center gap-2 cursor-pointer">
-                  <Checkbox
-                    checked={brandId === brand.id}
-                    onCheckedChange={(checked) =>
-                      setBrandId(checked ? brand.id : null)
-                    }
-                  />
-                  <span className="text-sm">{brand.name}</span>
-                </label>
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
+            {brands.map((brand) => (
+              <label key={brand.id} className="flex items-center gap-2 cursor-pointer">
+                <Checkbox
+                  checked={brandId === brand.id}
+                  onCheckedChange={(checked) =>
+                    setBrandId(checked ? brand.id : null)
+                  }
+                />
+                <span className="text-sm">{brand.name}</span>
+              </label>
+            ))}
+          </div>
         </div>
       )}
 

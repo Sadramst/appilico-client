@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { OfferTypeLabels } from "@/types/offer.types";
 
 export default function AdminOffersPage() {
-  const { data, isLoading } = useAllOffers({ page: 1, pageSize: 20 });
+  const { data, isLoading } = useAllOffers({ pageNumber: 1, pageSize: 20 });
   const offers = data?.data ?? [];
 
   return (

@@ -19,7 +19,7 @@ export function useOffer(id: string) {
   });
 }
 
-export function useAllOffers(params?: { page?: number; pageSize?: number }) {
+export function useAllOffers(params?: { pageNumber?: number; pageSize?: number }) {
   return useQuery({
     queryKey: ["offers", params],
     queryFn: () => offerService.getAll(params),

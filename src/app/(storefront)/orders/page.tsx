@@ -8,7 +8,7 @@ import { OrderCard, OrderCardSkeleton } from "@/components/order/order-card";
 import { useMyOrders } from "@/hooks/use-orders";
 
 export default function OrdersPage() {
-  const { data, isLoading } = useMyOrders({ page: 1, pageSize: 20 });
+  const { data, isLoading } = useMyOrders({ pageNumber: 1, pageSize: 20 });
   const orders = data?.data ?? [];
 
   return (

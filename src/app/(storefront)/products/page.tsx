@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { ProductGrid } from "@/components/product/product-grid";
 import { ProductFilters } from "@/components/product/product-filters";
 import { useProducts } from "@/hooks/use-products";
+import { useSearchStore } from "@/stores/search-store";
 import {
   Pagination,
   PaginationContent,
@@ -20,11 +21,20 @@ function ProductsContent() {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") ?? "1");
   const search = searchParams.get("search") ?? undefined;
+  const { categoryId, brandId, minPrice, maxPrice, minRating, inStock, sortBy } =
+    useSearchStore();
 
   const { data, isLoading } = useProducts({
-    page,
+    pageNumber: page,
     pageSize: 12,
     searchTerm: search,
+    categoryId: categoryId ?? undefined,
+    brandId: brandId ?? undefined,
+    minPrice: minPrice ?? undefined,
+    maxPrice: maxPrice ?? undefined,
+    minRating: minRating ?? undefined,
+    inStockOnly: inStock || undefined,
+    sortBy: sortBy !== "newest" ? sortBy : undefined,
   });
 
   const products = data?.data ?? [];
