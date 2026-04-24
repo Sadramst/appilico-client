@@ -8,7 +8,7 @@ import { useCustomers } from "@/hooks/use-customers";
 import { formatDate, getInitials } from "@/lib/utils";
 
 export default function AdminCustomersPage() {
-  const { data, isLoading } = useCustomers({ pageNumber: 1, pageSize: 20 });
+  const { data, isLoading } = useCustomers({ page: 1, pageSize: 20 });
   const customers = data?.data ?? [];
 
   return (

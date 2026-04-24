@@ -12,7 +12,7 @@ import { Eye } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminOrdersPage() {
-  const { data, isLoading } = useAllOrders({ pageNumber: 1, pageSize: 20 });
+  const { data, isLoading } = useAllOrders({ page: 1, pageSize: 20 });
   const orders = data?.data ?? [];
 
   return (

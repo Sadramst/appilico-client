@@ -25,7 +25,7 @@ function ProductsContent() {
     useSearchStore();
 
   const { data, isLoading } = useProducts({
-    pageNumber: page,
+    page,
     pageSize: 12,
     searchTerm: search,
     categoryId: categoryId ?? undefined,

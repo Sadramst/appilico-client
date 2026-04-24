@@ -45,7 +45,7 @@ export interface IProductFilter {
   maxPrice?: number;
   minRating?: number;
   inStockOnly?: boolean;
-  pageNumber?: number;
+  page?: number;
   pageSize?: number;
   sortBy?: string;
   sortDescending?: boolean;

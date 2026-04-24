@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { DiscountTypeLabels } from "@/types/discount.types";
 
 export default function AdminDiscountsPage() {
-  const { data, isLoading } = useDiscounts({ pageNumber: 1, pageSize: 20 });
+  const { data, isLoading } = useDiscounts({ page: 1, pageSize: 20 });
   const discounts = data?.data ?? [];
 
   return (

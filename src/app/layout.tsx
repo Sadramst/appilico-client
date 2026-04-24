@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "@/styles/animations.css";
@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   description:
     "Discover premium products at Appilico. Shop the latest trends with fast delivery and exceptional quality.",
   keywords: ["e-commerce", "shop", "online store", "premium products"],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Appilico",
+  },
   openGraph: {
     title: "Appilico — Premium E-Commerce",
     description: "Discover premium products at Appilico.",
@@ -35,6 +41,13 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,6 +55,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} h-full`}>
+      <head>
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
+        <meta name="mobile-web-app-capable" content="yes" />
+      </head>
       <body className="min-h-full flex flex-col font-sans antialiased">
         <ThemeProvider>
           <QueryProvider>
@@ -53,6 +70,11 @@ export default function RootLayout({
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js')})}`,
+          }}
+        />
       </body>
     </html>
   );

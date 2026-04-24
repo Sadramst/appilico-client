@@ -22,7 +22,7 @@ export default function ProductDetailPage({
 
   const { data: reviewsData, isLoading: reviewsLoading } = useProductReviews(
     product?.id ?? "",
-    { pageNumber: 1, pageSize: 10 }
+    { page: 1, pageSize: 10 }
   );
 
   if (isLoading) {

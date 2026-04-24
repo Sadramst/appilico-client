@@ -19,9 +19,6 @@ export const registerSchema = z
       .regex(/[0-9]/, "Password must contain a number")
       .regex(/[^A-Za-z0-9]/, "Password must contain a special character"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
-    acceptTerms: z.literal(true, {
-      message: "You must accept the terms and conditions",
-    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -50,6 +47,7 @@ export const resetPasswordSchema = z
 export const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(50),
   lastName: z.string().min(1, "Last name is required").max(50),
+  phoneNumber: z.string().max(20).optional(),
 });
 
 export const addressSchema = z.object({

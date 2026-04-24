@@ -28,7 +28,7 @@ export interface IApiError {
 }
 
 export interface IQueryParams {
-  pageNumber?: number;
+  page?: number;
   pageSize?: number;
   searchTerm?: string;
   sortBy?: string;

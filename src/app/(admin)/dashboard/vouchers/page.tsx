@@ -10,7 +10,7 @@ import { useAllVouchers } from "@/hooks/use-vouchers";
 import { formatDate, formatPrice } from "@/lib/utils";
 
 export default function AdminVouchersPage() {
-  const { data, isLoading } = useAllVouchers({ pageNumber: 1, pageSize: 20 });
+  const { data, isLoading } = useAllVouchers({ page: 1, pageSize: 20 });
   const vouchers = data?.data ?? [];
 
   return (

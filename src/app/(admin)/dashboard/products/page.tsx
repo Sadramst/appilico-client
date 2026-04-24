@@ -13,7 +13,7 @@ import { useProducts } from "@/hooks/use-products";
 import { formatPrice } from "@/lib/utils";
 
 export default function AdminProductsPage() {
-  const { data, isLoading } = useProducts({ pageNumber: 1, pageSize: 20 });
+  const { data, isLoading } = useProducts({ page: 1, pageSize: 20 });
   const products = data?.data ?? [];
 
   return (
