@@ -201,8 +201,9 @@ export function ProductFilters() {
       {/* Mobile */}
       <div className="lg:hidden">
         <Sheet>
-          <SheetTrigger>
-            <Button variant="outline" size="sm" className="gap-2">
+          <SheetTrigger
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs hover:bg-accent hover:text-accent-foreground h-8"
+          >
               <SlidersHorizontal className="h-4 w-4" />
               Filters
               {activeFilterCount > 0 && (
@@ -210,7 +211,6 @@ export function ProductFilters() {
                   {activeFilterCount}
                 </Badge>
               )}
-            </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-80">
             <SheetHeader>
