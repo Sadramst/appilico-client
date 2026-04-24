@@ -2,37 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { CreditCard, MapPin, Truck, Check, Loader2 } from "lucide-react";
+import { CreditCard, MapPin, Check, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { useCartStore } from "@/stores/cart-store";
 import { useCreateOrder } from "@/hooks/use-orders";
+import { useMyCustomerProfile } from "@/hooks/use-customers";
 import { PaymentMethodLabels } from "@/types/order.types";
-import { addressSchema, type TAddressFormData } from "@/lib/validators";
+import { AddressTypeLabels } from "@/types/customer.types";
 
 const steps = [
   { id: 1, title: "Shipping", icon: MapPin },
@@ -43,30 +26,30 @@ const steps = [
 export function CheckoutForm() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState(0); // 0=CreditCard
+  const [paymentMethod, setPaymentMethod] = useState(0);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const { items, total, clearCart } = useCartStore();
   const createOrder = useCreateOrder();
+  const { data: customerData, isLoading: loadingCustomer } = useMyCustomerProfile();
+  const addresses = customerData?.data?.addresses ?? [];
 
-  const form = useForm<TAddressFormData>({
-    resolver: zodResolver(addressSchema),
-    defaultValues: {
-      fullName: "",
-      phone: "",
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      country: "US",
-      isDefault: false,
-      type: "Shipping" as const,
-    },
-  });
+  // Auto-select default address
+  if (!selectedAddressId && addresses.length > 0) {
+    const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0];
+    setSelectedAddressId(defaultAddr.id);
+  }
+
+  const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
 
   const handlePlaceOrder = async () => {
+    if (!selectedAddressId) {
+      toast.error("Please select a shipping address");
+      return;
+    }
     createOrder.mutate(
       {
-        shippingAddressId: "new",
+        shippingAddressId: selectedAddressId,
+        billingAddressId: selectedAddressId,
         paymentMethod,
         notes: "",
       },
@@ -80,10 +63,10 @@ export function CheckoutForm() {
     );
   };
 
-  const nextStep = async () => {
-    if (currentStep === 1) {
-      const valid = await form.trigger();
-      if (!valid) return;
+  const nextStep = () => {
+    if (currentStep === 1 && !selectedAddressId) {
+      toast.error("Please select a shipping address");
+      return;
     }
     setCurrentStep((s) => Math.min(3, s + 1));
   };
@@ -145,124 +128,54 @@ export function CheckoutForm() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Form {...form}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="fullName"
-                        render={({ field }) => (
-                          <FormItem className="sm:col-span-2">
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="John Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem className="sm:col-span-2">
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <Input placeholder="+1 (555) 000-0000" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="addressLine1"
-                        render={({ field }) => (
-                          <FormItem className="sm:col-span-2">
-                            <FormLabel>Address Line 1</FormLabel>
-                            <FormControl>
-                              <Input placeholder="123 Main Street" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="addressLine2"
-                        render={({ field }) => (
-                          <FormItem className="sm:col-span-2">
-                            <FormLabel>Address Line 2 (Optional)</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Apt, Suite, Unit" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="city"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>City</FormLabel>
-                            <FormControl>
-                              <Input placeholder="New York" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>State</FormLabel>
-                            <FormControl>
-                              <Input placeholder="NY" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="postalCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Postal Code</FormLabel>
-                            <FormControl>
-                              <Input placeholder="10001" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="country"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Country</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="US">United States</SelectItem>
-                                <SelectItem value="CA">Canada</SelectItem>
-                                <SelectItem value="GB">United Kingdom</SelectItem>
-                                <SelectItem value="AU">Australia</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                  {loadingCustomer ? (
+                    <div className="space-y-3">
+                      <Skeleton className="h-20 w-full" />
+                      <Skeleton className="h-20 w-full" />
                     </div>
-                  </Form>
+                  ) : addresses.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      No addresses found. Please add an address to your account first.
+                    </p>
+                  ) : (
+                    <RadioGroup
+                      value={selectedAddressId}
+                      onValueChange={setSelectedAddressId}
+                      className="space-y-3"
+                    >
+                      {addresses.map((addr) => (
+                        <label
+                          key={addr.id}
+                          className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
+                            selectedAddressId === addr.id ? "border-primary bg-primary/5" : "hover:bg-muted"
+                          }`}
+                        >
+                          <RadioGroupItem value={addr.id} className="mt-1" />
+                          <div className="flex-1 text-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{addr.title}</span>
+                              {addr.isDefault && (
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                  Default
+                                </span>
+                              )}
+                              <span className="text-xs text-muted-foreground">
+                                ({AddressTypeLabels[addr.addressType] ?? "Address"})
+                              </span>
+                            </div>
+                            <p className="text-muted-foreground mt-1">
+                              {addr.addressLine1}
+                              {addr.addressLine2 && `, ${addr.addressLine2}`}
+                              <br />
+                              {addr.city}, {addr.state} {addr.postalCode}
+                              <br />
+                              {addr.country}
+                            </p>
+                          </div>
+                        </label>
+                      ))}
+                    </RadioGroup>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -325,11 +238,16 @@ export function CheckoutForm() {
                 <CardContent className="space-y-4">
                   <div>
                     <h4 className="text-sm font-medium text-muted-foreground mb-2">Shipping To</h4>
-                    <p className="text-sm">
-                      {form.getValues("fullName")}<br />
-                      {form.getValues("addressLine1")}<br />
-                      {form.getValues("city")}, {form.getValues("state")} {form.getValues("postalCode")}
-                    </p>
+                    {selectedAddress ? (
+                      <p className="text-sm">
+                        {selectedAddress.title}<br />
+                        {selectedAddress.addressLine1}<br />
+                        {selectedAddress.city}, {selectedAddress.state} {selectedAddress.postalCode}<br />
+                        {selectedAddress.country}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No address selected</p>
+                    )}
                   </div>
                   <Separator />
                   <div>
