@@ -10,3 +10,11 @@ export function useDiscounts(params?: IQueryParams) {
     queryFn: () => discountService.getAll(params),
   });
 }
+
+export function useActiveDiscounts() {
+  return useQuery({
+    queryKey: ["discounts", "active"],
+    queryFn: () => discountService.getActive(),
+    staleTime: 5 * 60 * 1000,
+  });
+}

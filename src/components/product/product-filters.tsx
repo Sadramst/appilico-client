@@ -24,9 +24,49 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearchStore } from "@/stores/search-store";
-import { useCategories } from "@/hooks/use-categories";
+import { useCategoryTree } from "@/hooks/use-categories";
 import { useBrands } from "@/hooks/use-brands";
 import { SORT_OPTIONS } from "@/lib/constants";
+import type { ICategoryTree } from "@/types/category.types";
+
+function CategoryTreeNode({
+  category,
+  selectedId,
+  onSelect,
+  depth = 0,
+}: {
+  category: ICategoryTree;
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+  depth?: number;
+}) {
+  return (
+    <div>
+      <label
+        className="flex items-center gap-2 cursor-pointer"
+        style={{ paddingLeft: depth * 16 }}
+      >
+        <Checkbox
+          checked={selectedId === category.id}
+          onCheckedChange={(checked) => onSelect(checked ? category.id : null)}
+        />
+        <span className="text-sm">{category.name}</span>
+        {category.productCount > 0 && (
+          <span className="text-xs text-muted-foreground">({category.productCount})</span>
+        )}
+      </label>
+      {category.subCategories?.map((sub) => (
+        <CategoryTreeNode
+          key={sub.id}
+          category={sub}
+          selectedId={selectedId}
+          onSelect={onSelect}
+          depth={depth + 1}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function ProductFilters() {
   const router = useRouter();
@@ -47,7 +87,7 @@ export function ProductFilters() {
     setSortBy,
     clearFilters,
   } = useSearchStore();
-  const { data: categoriesData } = useCategories();
+  const { data: categoriesData } = useCategoryTree();
   const { data: brandsData } = useBrands();
 
   const categories = categoriesData?.data ?? [];
@@ -83,21 +123,18 @@ export function ProductFilters() {
 
       <Separator />
 
-      {/* Categories */}
+      {/* Categories (Tree) */}
       {categories.length > 0 && (
         <div className="space-y-3">
           <Label>Category</Label>
-          <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
+          <div className="max-h-64 overflow-y-auto space-y-1 pr-1">
             {categories.map((cat) => (
-              <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
-                <Checkbox
-                  checked={categoryId === cat.id}
-                  onCheckedChange={(checked) =>
-                    setCategoryId(checked ? cat.id : null)
-                  }
-                />
-                <span className="text-sm">{cat.name}</span>
-              </label>
+              <CategoryTreeNode
+                key={cat.id}
+                category={cat}
+                selectedId={categoryId}
+                onSelect={setCategoryId}
+              />
             ))}
           </div>
         </div>

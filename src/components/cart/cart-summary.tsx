@@ -5,7 +5,7 @@ import { Ticket, X, Loader2, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useCartStore } from "@/stores/cart-store";
+import { useCart } from "@/hooks/use-cart";
 import { useValidateVoucher } from "@/hooks/use-vouchers";
 import { formatPrice } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ export function CartSummary() {
     voucherCode,
     setVoucher,
     removeVoucher,
-  } = useCartStore();
+  } = useCart();
 
   const [code, setCode] = useState("");
   const validateVoucher = useValidateVoucher();

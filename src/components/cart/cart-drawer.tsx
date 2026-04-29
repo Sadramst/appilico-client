@@ -15,12 +15,12 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageWithFallback } from "@/components/shared/image-with-fallback";
 import { EmptyState } from "@/components/shared/empty-state";
-import { useCartStore } from "@/stores/cart-store";
+import { useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, itemCount, subtotal, total, updateQuantity, removeItem } =
-    useCartStore();
+    useCart();
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && closeCart()}>
@@ -94,7 +94,7 @@ export function CartDrawer() {
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity - 1 })}
                               disabled={item.quantity <= 1}
                             >
                               <Minus className="h-3 w-3" />
@@ -106,7 +106,7 @@ export function CartDrawer() {
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity + 1 })}
                             >
                               <Plus className="h-3 w-3" />
                             </Button>

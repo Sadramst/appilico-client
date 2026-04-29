@@ -10,7 +10,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PriceTag } from "@/components/shared/price-tag";
 import { StarRating } from "@/components/shared/star-rating";
-import { useCartStore } from "@/stores/cart-store";
+import { useCart } from "@/hooks/use-cart";
+import { useWishlist } from "@/hooks/use-wishlist";
+import { useAuthStore } from "@/stores/auth-store";
 import { formatNumber, getStockStatus } from "@/lib/utils";
 import type { IProduct, IProductVariant } from "@/types/product.types";
 
@@ -23,7 +25,10 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const [selectedVariant, setSelectedVariant] = useState<IProductVariant | null>(
     product.variants.length > 0 ? product.variants[0] : null
   );
-  const { addItem } = useCartStore();
+  const { addItem } = useCart();
+  const { isAuthenticated } = useAuthStore();
+  const { toggle: toggleWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
 
   const stockStatus = getStockStatus(
     selectedVariant?.stockQuantity ?? product.stockQuantity
@@ -147,8 +152,20 @@ export function ProductInfo({ product }: ProductInfoProps) {
           {stockStatus === "out-of-stock" ? "Sold Out" : "Add to Cart"}
         </Button>
 
-        <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" aria-label="Add to wishlist">
-          <Heart className="h-4 w-4" />
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 shrink-0"
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          onClick={() => {
+            if (!isAuthenticated) {
+              toast.error("Please sign in to use the wishlist");
+              return;
+            }
+            toggleWishlist(product.id);
+          }}
+        >
+          <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
         </Button>
 
         <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={handleShare} aria-label="Share">

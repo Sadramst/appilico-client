@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useCartStore } from "@/stores/cart-store";
 import { cartService } from "@/services/cart-service";
@@ -11,6 +12,20 @@ export function useCart() {
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuthStore();
   const store = useCartStore();
+
+  // Fetch server cart for authenticated users and sync into Zustand store
+  const serverCartQuery = useQuery({
+    queryKey: ["cart"],
+    queryFn: () => cartService.get(),
+    enabled: isAuthenticated,
+    staleTime: 30 * 1000,
+  });
+
+  useEffect(() => {
+    if (isAuthenticated && serverCartQuery.data?.data) {
+      store.setItems(serverCartQuery.data.data.items);
+    }
+  }, [isAuthenticated, serverCartQuery.data]);
 
   const addToCartMutation = useMutation({
     mutationFn: (item: ICartItem) => {
@@ -24,10 +39,11 @@ export function useCart() {
       store.addItem(item);
       return Promise.resolve(null);
     },
-    onSuccess: (_data, item) => {
+    onSuccess: (data, item) => {
       toast.success(`${item.productName} added to cart`);
       store.openCart();
-      if (isAuthenticated) {
+      if (isAuthenticated && data?.data) {
+        store.setItems(data.data.items);
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       }
     },
@@ -44,8 +60,9 @@ export function useCart() {
       store.updateQuantity(itemId, quantity);
       return Promise.resolve(null);
     },
-    onSuccess: () => {
-      if (isAuthenticated) {
+    onSuccess: (data) => {
+      if (isAuthenticated && data?.data) {
+        store.setItems(data.data.items);
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       }
     },
@@ -59,9 +76,10 @@ export function useCart() {
       store.removeItem(itemId);
       return Promise.resolve(null);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Item removed from cart");
-      if (isAuthenticated) {
+      if (isAuthenticated && data?.data) {
+        store.setItems(data.data.items);
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       }
     },
@@ -78,6 +96,7 @@ export function useCart() {
     onSuccess: () => {
       toast.success("Cart cleared");
       if (isAuthenticated) {
+        store.clearCart();
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       }
     },
@@ -93,6 +112,7 @@ export function useCart() {
     total: store.total,
     voucherCode: store.voucherCode,
     isOpen: store.isOpen,
+    isLoading: isAuthenticated ? serverCartQuery.isLoading : false,
     addItem: addToCartMutation.mutate,
     isAdding: addToCartMutation.isPending,
     updateQuantity: updateQuantityMutation.mutate,

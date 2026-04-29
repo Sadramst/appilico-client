@@ -3,19 +3,36 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CreditCard, MapPin, Check, Loader2 } from "lucide-react";
+import { CreditCard, MapPin, Check, Loader2, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CartSummary } from "@/components/cart/cart-summary";
-import { useCartStore } from "@/stores/cart-store";
+import { useCart } from "@/hooks/use-cart";
 import { useCreateOrder } from "@/hooks/use-orders";
-import { useMyCustomerProfile } from "@/hooks/use-customers";
+import { useMyAddresses, useCreateAddress } from "@/hooks/use-customers";
+import { useValidateVoucher } from "@/hooks/use-vouchers";
 import { PaymentMethodLabels } from "@/types/order.types";
-import { AddressTypeLabels } from "@/types/customer.types";
+import { AddressTypeLabels, type ICustomerAddress } from "@/types/customer.types";
 
 const steps = [
   { id: 1, title: "Shipping", icon: MapPin },
@@ -23,15 +40,35 @@ const steps = [
   { id: 3, title: "Review", icon: Check },
 ];
 
+type AddressFormData = Omit<ICustomerAddress, "id">;
+
+const emptyAddressForm: AddressFormData = {
+  title: "",
+  addressLine1: "",
+  addressLine2: null,
+  city: "",
+  state: "",
+  postalCode: "",
+  country: "",
+  isDefault: false,
+  addressType: 2,
+};
+
 export function CheckoutForm() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
-  const { items, total, clearCart } = useCartStore();
+  const [voucherInput, setVoucherInput] = useState("");
+  const [addAddressOpen, setAddAddressOpen] = useState(false);
+  const [addressForm, setAddressForm] = useState<AddressFormData>(emptyAddressForm);
+
+  const { items, total, subtotal, clearCart, setVoucher } = useCart();
   const createOrder = useCreateOrder();
-  const { data: customerData, isLoading: loadingCustomer } = useMyCustomerProfile();
-  const addresses = customerData?.data?.addresses ?? [];
+  const { data: addressData, isLoading: loadingAddresses } = useMyAddresses();
+  const createAddress = useCreateAddress();
+  const validateVoucher = useValidateVoucher();
+  const addresses = addressData?.data ?? [];
 
   // Auto-select default address
   if (!selectedAddressId && addresses.length > 0) {
@@ -63,6 +100,36 @@ export function CheckoutForm() {
     );
   };
 
+  const handleAddAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    createAddress.mutate(addressForm, {
+      onSuccess: (data) => {
+        setAddAddressOpen(false);
+        setAddressForm(emptyAddressForm);
+        if (data.data) {
+          setSelectedAddressId(data.data.id);
+        }
+      },
+    });
+  };
+
+  const handleApplyVoucher = () => {
+    if (!voucherInput.trim()) return;
+    validateVoucher.mutate(
+      { code: voucherInput, orderAmount: subtotal },
+      {
+        onSuccess: (data) => {
+          if (data.data?.isValid) {
+            setVoucher(voucherInput, data.data.discountAmount ?? 0);
+            toast.success("Voucher applied!");
+          } else {
+            toast.error("Invalid or expired voucher");
+          }
+        },
+      }
+    );
+  };
+
   const nextStep = () => {
     if (currentStep === 1 && !selectedAddressId) {
       toast.error("Please select a shipping address");
@@ -74,6 +141,7 @@ export function CheckoutForm() {
   const prevStep = () => setCurrentStep((s) => Math.max(1, s - 1));
 
   return (
+    <>
     <div className="grid lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2 space-y-6">
         {/* Stepper */}
@@ -122,21 +190,38 @@ export function CheckoutForm() {
             >
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Shipping Address
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      Shipping Address
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1"
+                      onClick={() => setAddAddressOpen(true)}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Add New
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {loadingCustomer ? (
+                  {loadingAddresses ? (
                     <div className="space-y-3">
                       <Skeleton className="h-20 w-full" />
                       <Skeleton className="h-20 w-full" />
                     </div>
                   ) : addresses.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      No addresses found. Please add an address to your account first.
-                    </p>
+                    <div className="text-center py-4">
+                      <p className="text-sm text-muted-foreground mb-3">
+                        No addresses found. Add one to continue.
+                      </p>
+                      <Button size="sm" onClick={() => setAddAddressOpen(true)} className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add Address
+                      </Button>
+                    </div>
                   ) : (
                     <RadioGroup
                       value={selectedAddressId}
@@ -304,10 +389,154 @@ export function CheckoutForm() {
 
       {/* Sidebar */}
       <div className="lg:col-span-1">
-        <div className="sticky top-24">
+        <div className="sticky top-24 space-y-4">
           <CartSummary />
+          {/* Voucher Code */}
+          <Card>
+            <CardContent className="pt-6">
+              <Label htmlFor="voucher" className="text-sm font-medium">Voucher Code</Label>
+              <div className="flex gap-2 mt-2">
+                <Input
+                  id="voucher"
+                  placeholder="Enter code"
+                  value={voucherInput}
+                  onChange={(e) => setVoucherInput(e.target.value)}
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleApplyVoucher}
+                  disabled={validateVoucher.isPending}
+                >
+                  {validateVoucher.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Apply"
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
+
+    {/* Add Address Dialog */}
+    <Dialog open={addAddressOpen} onOpenChange={setAddAddressOpen}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Add New Address</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleAddAddress} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Label htmlFor="addr-title">Title</Label>
+              <Input
+                id="addr-title"
+                placeholder="e.g. Home, Office"
+                value={addressForm.title}
+                onChange={(e) => setAddressForm({ ...addressForm, title: e.target.value })}
+                required
+              />
+            </div>
+            <div className="col-span-2">
+              <Label htmlFor="addr-line1">Address Line 1</Label>
+              <Input
+                id="addr-line1"
+                placeholder="Street address"
+                value={addressForm.addressLine1}
+                onChange={(e) => setAddressForm({ ...addressForm, addressLine1: e.target.value })}
+                required
+              />
+            </div>
+            <div className="col-span-2">
+              <Label htmlFor="addr-line2">Address Line 2 (Optional)</Label>
+              <Input
+                id="addr-line2"
+                placeholder="Apartment, suite, etc."
+                value={addressForm.addressLine2 ?? ""}
+                onChange={(e) =>
+                  setAddressForm({ ...addressForm, addressLine2: e.target.value || null })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="addr-city">City</Label>
+              <Input
+                id="addr-city"
+                value={addressForm.city}
+                onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="addr-state">State</Label>
+              <Input
+                id="addr-state"
+                value={addressForm.state}
+                onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="addr-postal">Postal Code</Label>
+              <Input
+                id="addr-postal"
+                value={addressForm.postalCode}
+                onChange={(e) => setAddressForm({ ...addressForm, postalCode: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="addr-country">Country</Label>
+              <Input
+                id="addr-country"
+                value={addressForm.country}
+                onChange={(e) => setAddressForm({ ...addressForm, country: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="addr-type">Type</Label>
+              <Select
+                value={String(addressForm.addressType)}
+                onValueChange={(v) => setAddressForm({ ...addressForm, addressType: Number(v) })}
+              >
+                <SelectTrigger id="addr-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">Shipping</SelectItem>
+                  <SelectItem value="1">Billing</SelectItem>
+                  <SelectItem value="2">Both</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2 pt-6">
+              <Switch
+                id="addr-default"
+                checked={addressForm.isDefault}
+                onCheckedChange={(checked) =>
+                  setAddressForm({ ...addressForm, isDefault: checked })
+                }
+              />
+              <Label htmlFor="addr-default">Default</Label>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setAddAddressOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={createAddress.isPending} className="gap-2">
+              {createAddress.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+              Add Address
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

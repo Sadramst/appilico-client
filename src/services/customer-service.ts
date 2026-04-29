@@ -1,6 +1,6 @@
 import apiClient from "./api-client";
 import type { IApiResponse, IQueryParams } from "@/types/api.types";
-import type { ICustomer, IUpdateCustomerRequest, ICustomerLoyalty } from "@/types/customer.types";
+import type { ICustomer, IUpdateCustomerRequest, ICustomerLoyalty, ICustomerAddress } from "@/types/customer.types";
 
 const CUSTOMERS_BASE = "/customers";
 
@@ -32,6 +32,27 @@ export const customerService = {
 
   addLoyaltyPoints: async (id: string, points: number): Promise<IApiResponse<null>> => {
     const response = await apiClient.post<IApiResponse<null>>(`${CUSTOMERS_BASE}/${id}/loyalty/points`, null, { params: { points } });
+    return response.data;
+  },
+
+  // Address CRUD
+  getMyAddresses: async (): Promise<IApiResponse<ICustomerAddress[]>> => {
+    const response = await apiClient.get<IApiResponse<ICustomerAddress[]>>(`${CUSTOMERS_BASE}/me/addresses`);
+    return response.data;
+  },
+
+  createAddress: async (data: Omit<ICustomerAddress, "id">): Promise<IApiResponse<ICustomerAddress>> => {
+    const response = await apiClient.post<IApiResponse<ICustomerAddress>>(`${CUSTOMERS_BASE}/me/addresses`, data);
+    return response.data;
+  },
+
+  updateAddress: async (addressId: string, data: Omit<ICustomerAddress, "id">): Promise<IApiResponse<ICustomerAddress>> => {
+    const response = await apiClient.put<IApiResponse<ICustomerAddress>>(`${CUSTOMERS_BASE}/me/addresses/${addressId}`, data);
+    return response.data;
+  },
+
+  deleteAddress: async (addressId: string): Promise<IApiResponse<null>> => {
+    const response = await apiClient.delete<IApiResponse<null>>(`${CUSTOMERS_BASE}/me/addresses/${addressId}`);
     return response.data;
   },
 };

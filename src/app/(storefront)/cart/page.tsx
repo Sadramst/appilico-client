@@ -9,11 +9,11 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { ImageWithFallback } from "@/components/shared/image-with-fallback";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/stores/cart-store";
+import { useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem, clearCart } = useCartStore();
+  const { items, updateQuantity, removeItem, clearCart } = useCart();
 
   if (items.length === 0) {
     return (
@@ -34,7 +34,7 @@ export default function CartPage() {
     <div className="container mx-auto px-4 py-8">
       <Breadcrumbs />
       <PageHeader title="Shopping Cart" className="mt-4">
-        <Button variant="outline" size="sm" onClick={clearCart} className="gap-2 text-destructive">
+        <Button variant="outline" size="sm" onClick={() => clearCart()} className="gap-2 text-destructive">
           <Trash2 className="h-3.5 w-3.5" />
           Clear Cart
         </Button>
@@ -85,7 +85,7 @@ export default function CartPage() {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity - 1 })}
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-3 w-3" />
@@ -97,7 +97,7 @@ export default function CartPage() {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity + 1 })}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>

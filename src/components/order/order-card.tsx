@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Package, ChevronRight, Eye } from "lucide-react";
+import { Package, ChevronRight, Eye, XCircle, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { OrderStatusLabels } from "@/types/order.types";
+import { useCancelOrder } from "@/hooks/use-orders";
 import type { IOrder } from "@/types/order.types";
 
 interface OrderCardProps {
@@ -15,6 +16,8 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order }: OrderCardProps) {
+  const cancelOrder = useCancelOrder();
+  const canCancel = order.orderStatus === 0 || order.orderStatus === 1;
   return (
     <Card className="hover:shadow-sm transition-shadow">
       <CardContent className="p-4 sm:p-6">
@@ -39,8 +42,24 @@ export function OrderCard({ order }: OrderCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <span className="text-lg font-bold">{formatPrice(order.totalAmount)}</span>
+            {canCancel && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1 text-destructive hover:text-destructive"
+                onClick={() => cancelOrder.mutate(order.id)}
+                disabled={cancelOrder.isPending}
+              >
+                {cancelOrder.isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <XCircle className="h-3.5 w-3.5" />
+                )}
+                Cancel
+              </Button>
+            )}
             <Button asChild variant="outline" size="sm" className="gap-1">
               <Link href={`/orders/${order.id}`}>
                 <Eye className="h-3.5 w-3.5" />

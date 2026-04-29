@@ -1,6 +1,7 @@
 "use client";
 
 import { HeroBanner } from "@/components/home/hero-banner";
+import { ActiveDiscountsBanner } from "@/components/home/active-discounts";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { FeaturedProducts } from "@/components/home/featured-products";
 import { TrendingProducts } from "@/components/home/trending-products";
@@ -11,6 +12,7 @@ export default function HomePage() {
   return (
     <>
       <HeroBanner />
+      <ActiveDiscountsBanner />
       <TrustBadges />
       <FeaturedProducts />
       <CategoryGrid />

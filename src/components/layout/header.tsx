@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -14,6 +15,7 @@ import {
   Package,
   Settings,
   LayoutDashboard,
+  MapPin,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -27,17 +29,81 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
-import { useCartStore } from "@/stores/cart-store";
+import { useCart } from "@/hooks/use-cart";
 import { useAuthStore } from "@/stores/auth-store";
 import { useUIStore } from "@/stores/ui-store";
+import { useCategoryTree } from "@/hooks/use-categories";
 import { NAV_LINKS } from "@/lib/constants";
 import { getInitials } from "@/lib/utils";
+import type { ICategoryTree } from "@/types/category.types";
+
+function CategoryMegaMenu({
+  categories,
+  onClose,
+}: {
+  categories: ICategoryTree[];
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -5 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -5 }}
+      transition={{ duration: 0.15 }}
+      className="absolute top-full left-0 right-0 z-50 border-b bg-background shadow-lg"
+      onMouseLeave={onClose}
+    >
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-4 gap-6">
+          {categories.slice(0, 8).map((cat) => (
+            <div key={cat.id}>
+              <Link
+                href={`/products?categoryId=${cat.id}`}
+                className="font-semibold text-sm hover:text-primary transition-colors"
+                onClick={onClose}
+              >
+                {cat.name}
+              </Link>
+              {cat.subCategories.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {cat.subCategories.slice(0, 6).map((sub) => (
+                    <li key={sub.id}>
+                      <Link
+                        href={`/products?categoryId=${sub.id}`}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                        onClick={onClose}
+                      >
+                        {sub.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 pt-4 border-t">
+          <Link
+            href="/categories"
+            className="text-sm font-medium text-primary hover:underline"
+            onClick={onClose}
+          >
+            View All Categories →
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export function Header() {
   const pathname = usePathname();
-  const { itemCount, openCart } = useCartStore();
+  const { itemCount, openCart } = useCart();
   const { isAuthenticated, user } = useAuthStore();
   const { setMobileNavOpen, setSearchOpen } = useUIStore();
+  const { data: categoryTreeData } = useCategoryTree();
+  const categories = categoryTreeData?.data ?? [];
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -68,23 +134,31 @@ export function Header() {
         <nav className="hidden lg:flex items-center gap-1">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+            const isCategories = link.href === "/categories";
             return (
-              <Link
+              <div
                 key={link.href}
-                href={link.href}
-                className={`relative px-3 py-2 text-sm font-medium transition-colors rounded-md hover:bg-muted ${
-                  isActive ? "text-primary" : "text-muted-foreground"
-                }`}
+                className="relative"
+                onMouseEnter={() => isCategories && setMegaMenuOpen(true)}
+                onMouseLeave={() => isCategories && setMegaMenuOpen(false)}
               >
-                {link.label}
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </Link>
+                <Link
+                  href={link.href}
+                  className={`relative px-3 py-2 text-sm font-medium transition-colors rounded-md hover:bg-muted flex items-center gap-1 ${
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  {link.label}
+                  {isCategories && <ChevronDown className="h-3 w-3" />}
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-indicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              </div>
             );
           })}
         </nav>
@@ -164,6 +238,12 @@ export function Header() {
                     My Orders
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href="/addresses" className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Addresses
+                  </Link>
+                </DropdownMenuItem>
                 {(user?.roles?.includes("Admin") || user?.roles?.includes("SuperAdmin")) && (
                   <>
                     <DropdownMenuSeparator />
@@ -198,6 +278,16 @@ export function Header() {
           )}
         </div>
       </div>
+
+      {/* Category Mega Menu */}
+      <AnimatePresence>
+        {megaMenuOpen && categories.length > 0 && (
+          <CategoryMegaMenu
+            categories={categories}
+            onClose={() => setMegaMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </header>
   );
 }

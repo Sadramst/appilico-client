@@ -10,8 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PriceTag } from "@/components/shared/price-tag";
 import { StarRating } from "@/components/shared/star-rating";
 import { ImageWithFallback } from "@/components/shared/image-with-fallback";
+import { useCart } from "@/hooks/use-cart";
+import { useWishlist } from "@/hooks/use-wishlist";
+import { useAuthStore } from "@/stores/auth-store";
 import type { IProduct } from "@/types/product.types";
 import { getStockStatus } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: IProduct;
@@ -21,6 +25,36 @@ interface ProductCardProps {
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const stockStatus = getStockStatus(product.stockQuantity);
   const primaryImage = product.images.find((img) => img.isPrimary) ?? product.images[0];
+  const { addItem } = useCart();
+  const { toggle: toggleWishlist, isInWishlist } = useWishlist();
+  const { isAuthenticated } = useAuthStore();
+  const wishlisted = isInWishlist(product.id);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: product.id,
+      productId: product.id,
+      productName: product.name,
+      imageUrl: primaryImage?.imageUrl ?? null,
+      variantId: null,
+      variantName: null,
+      unitPrice: product.basePrice,
+      quantity: 1,
+      lineTotal: product.basePrice,
+    });
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.error("Please sign in to use the wishlist");
+      return;
+    }
+    toggleWishlist(product.id);
+  };
 
   return (
     <motion.div
@@ -74,9 +108,10 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                 size="icon"
                 variant="secondary"
                 className="h-8 w-8 rounded-full shadow-sm"
-                aria-label="Add to wishlist"
+                aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                onClick={handleToggleWishlist}
               >
-                <Heart className="h-3.5 w-3.5" />
+                <Heart className={`h-3.5 w-3.5 ${wishlisted ? "fill-red-500 text-red-500" : ""}`} />
               </Button>
               <Link href={`/products/${product.id}`}>
                 <Button
@@ -97,6 +132,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                   size="sm"
                   className="w-full gap-2 shadow-lg"
                   aria-label="Add to cart"
+                  onClick={handleAddToCart}
                 >
                   <ShoppingCart className="h-3.5 w-3.5" />
                   Add to Cart
