@@ -18,11 +18,11 @@ export function AppilicoLogo({ size = 32, className, withBackground = false }: A
         style={{ width: size, height: size }}
       >
         <Image
-          src="/favicon.svg"
+          src="/logo.png"
           alt="Appilico"
           width={size}
           height={size}
-          className="rounded-lg"
+          className="rounded-lg object-contain"
           priority
         />
       </div>
@@ -30,11 +30,11 @@ export function AppilicoLogo({ size = 32, className, withBackground = false }: A
   }
   return (
     <Image
-      src="/favicon.svg"
+      src="/logo.png"
       alt="Appilico"
       width={size}
       height={size}
-      className={cn("rounded-lg", className)}
+      className={cn("rounded-lg object-contain", className)}
       priority
     />
   );
