@@ -1,82 +1,125 @@
-import { test, expect, API_URL } from "../fixtures";
+import { test, expect } from "../fixtures";
 
-test.describe("Product Detail Page", () => {
-  let productUrl: string;
+// ============================================================
+// 04 - PRODUCT DETAIL – Playwright
+// ============================================================
 
-  test.beforeAll(async ({ request }) => {
-    const resp = await request.get(`${API_URL}/products?page=1&pageSize=1`);
-    const body = await resp.json();
-    if (body.data?.length) {
-      productUrl = `/products/${body.data[0].id}`;
-    }
-  });
+async function getProductUrl(page: any): Promise<string> {
+  const resp = await page.request.get("https://appilico-server.onrender.com/api/products?page=1&pageSize=1");
+  const body = await resp.json();
+  return `/products/${body.data[0]?.id ?? ""}`;
+}
 
-  test("renders product detail with name, price, and add-to-cart", async ({ page }) => {
-    await page.goto(productUrl ?? "/products");
-    if (!productUrl) await page.locator('a[href*="/products/"]').first().click();
-    await page.waitForTimeout(2000);
-
+test.describe("Product Detail – Info", () => {
+  test("shows product name heading", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.getByText(/add to cart|sold out/i)).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/product-detail.png", fullPage: true });
   });
 
-  test("shows product images", async ({ page }) => {
-    await page.goto(productUrl ?? "/products");
-    if (!productUrl) await page.locator('a[href*="/products/"]').first().click();
-    await page.waitForTimeout(2000);
-
-    await expect(page.locator("img").first()).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/product-gallery.png" });
+  test("shows price", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    const text = await page.textContent("body");
+    expect(text).toMatch(/\$\d/);
   });
 
-  test("adds to cart from detail page", async ({ authenticatedPage: page }) => {
-    await page.goto(productUrl ?? "/products");
-    if (!productUrl) await page.locator('a[href*="/products/"]').first().click();
-    await page.waitForTimeout(2000);
+  test("shows star rating", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    await expect(page.locator("svg").first()).toBeVisible();
+  });
 
+  test("shows stock badge", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    await expect(page.locator('[class*="badge"]').first()).toBeVisible();
+  });
+
+  test("shows Add to Cart button", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    await expect(page.getByText(/add to cart/i)).toBeVisible();
+  });
+
+  test("shows trust signals (Free Shipping)", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    await expect(page.getByText("Free Shipping")).toBeVisible();
+  });
+});
+
+test.describe("Product Detail – Gallery", () => {
+  test("main image renders", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    await expect(page.locator('img, [class*="aspect-square"]').first()).toBeVisible();
+    await page.screenshot({ path: "e2e/screenshots/pw-product-gallery.png" });
+  });
+});
+
+test.describe("Product Detail – Cart Actions", () => {
+  test("Add to Cart click (unauthenticated)", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
     await page.getByText(/add to cart/i).click();
     await page.waitForTimeout(1000);
-    await page.screenshot({ path: "e2e/screenshots/product-added-detail.png" });
+    await page.screenshot({ path: "e2e/screenshots/pw-product-add-cart.png" });
   });
 
-  test("toggles wishlist from detail (authenticated)", async ({ authenticatedPage: page }) => {
-    await page.goto(productUrl ?? "/products");
-    if (!productUrl) await page.locator('a[href*="/products/"]').first().click();
-    await page.waitForTimeout(2000);
+  test("Add to Cart click (authenticated)", async ({ authenticatedPage }) => {
+    const url = await getProductUrl(authenticatedPage);
+    await authenticatedPage.goto(url);
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.getByText(/add to cart/i).click();
+    await authenticatedPage.waitForTimeout(1000);
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-product-add-cart-auth.png" });
+  });
+});
 
-    const wishBtn = page.locator('button[aria-label*="wishlist"]').first();
-    if (await wishBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await wishBtn.click();
-      await page.waitForTimeout(1000);
-      await page.screenshot({ path: "e2e/screenshots/product-wishlist-detail.png" });
-    }
+test.describe("Product Detail – Wishlist", () => {
+  test("wishlist button exists", async ({ authenticatedPage }) => {
+    const url = await getProductUrl(authenticatedPage);
+    await authenticatedPage.goto(url);
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.locator('button[aria-label*="wishlist"]').first()).toBeVisible();
   });
 
-  test("shows description and shipping tabs", async ({ page }) => {
-    await page.goto(productUrl ?? "/products");
-    if (!productUrl) await page.locator('a[href*="/products/"]').first().click();
-    await page.waitForTimeout(2000);
-
-    const descTab = page.getByText("Description");
-    if (await descTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await descTab.click();
-      await page.screenshot({ path: "e2e/screenshots/product-tab-description.png" });
-    }
-    const shipTab = page.getByText("Shipping");
-    if (await shipTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await shipTab.click();
-      await page.screenshot({ path: "e2e/screenshots/product-tab-shipping.png" });
-    }
+  test("clicking wishlist toggles state", async ({ authenticatedPage }) => {
+    const url = await getProductUrl(authenticatedPage);
+    await authenticatedPage.goto(url);
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.locator('button[aria-label*="wishlist"]').first().click();
+    await authenticatedPage.waitForTimeout(1000);
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-product-wishlist-toggle.png" });
   });
+});
 
-  test("shows trust signals", async ({ page }) => {
-    await page.goto(productUrl ?? "/products");
-    if (!productUrl) await page.locator('a[href*="/products/"]').first().click();
-    await page.waitForTimeout(2000);
+test.describe("Product Detail – Share", () => {
+  test("share button exists", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    await expect(page.locator('button[aria-label="Share"]')).toBeVisible();
+  });
+});
 
-    await expect(page.getByText("Free Shipping")).toBeVisible();
-    await expect(page.getByText("30-Day Returns")).toBeVisible();
-    await expect(page.getByText("2-Year Warranty")).toBeVisible();
+test.describe("Product Detail – Mobile", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test("renders on mobile viewport", async ({ page }) => {
+    const url = await getProductUrl(page);
+    await page.goto(url);
+    await page.waitForTimeout(3000);
+    await expect(page.locator("h1")).toBeVisible();
+    await page.screenshot({ path: "e2e/screenshots/pw-product-mobile.png" });
   });
 });

@@ -1,79 +1,114 @@
-import { test, expect, API_URL } from "../fixtures";
+import { test, expect } from "../fixtures";
 
-test.describe("Product Listing", () => {
-  test("renders product grid with cards", async ({ page }) => {
+// ============================================================
+// 03 - PRODUCTS LISTING – Playwright
+// ============================================================
+
+test.describe("Products Page – Layout", () => {
+  test("renders Products heading", async ({ page }) => {
     await page.goto("/products");
-    await page.waitForTimeout(2000);
-    const cards = page.locator('[class*="card"], [class*="Card"]');
-    await expect(cards.first()).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/products-listing.png", fullPage: true });
+    await expect(page.getByRole("heading", { name: /products/i }).first()).toBeVisible();
   });
 
-  test("product card shows name and price", async ({ page }) => {
+  test("shows breadcrumbs", async ({ page }) => {
     await page.goto("/products");
-    await page.waitForTimeout(2000);
-    const card = page.locator('[class*="card"]').first();
-    await expect(card.locator("h3, a")).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/product-card.png" });
+    await expect(page.locator('[class*="breadcrumb"]')).toBeVisible();
   });
 
-  test("filter by category checkbox", async ({ page }) => {
+  test("shows sidebar filters", async ({ page }) => {
     await page.goto("/products");
-    await page.waitForTimeout(2000);
-    const checkbox = page.locator('aside input[type="checkbox"], aside button[role="checkbox"]').first();
-    if (await checkbox.isVisible()) {
-      await checkbox.click();
-      await page.waitForTimeout(1000);
-      await page.screenshot({ path: "e2e/screenshots/products-filtered-category.png" });
-    }
+    await expect(page.locator("aside, [class*='sidebar']").first()).toBeVisible();
   });
 
-  test("navigates to product detail on card click", async ({ page }) => {
+  test("shows product grid", async ({ page }) => {
     await page.goto("/products");
-    await page.waitForTimeout(2000);
-    await page.locator('a[href*="/products/"]').first().click();
-    await expect(page).toHaveURL(/\/products\/.+/);
-    await page.screenshot({ path: "e2e/screenshots/product-detail-from-listing.png" });
-  });
-
-  test("adds product to cart from card (authenticated)", async ({ authenticatedPage: page }) => {
-    await page.goto("/products");
-    await page.waitForTimeout(2000);
-    const card = page.locator('[class*="card"]').first();
-    await card.hover();
-    const addBtn = card.locator('button[aria-label="Add to cart"]');
-    if (await addBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await addBtn.click();
-      await page.waitForTimeout(1000);
-      await page.screenshot({ path: "e2e/screenshots/product-added-from-card.png" });
-    }
-  });
-
-  test("toggles wishlist from card (authenticated)", async ({ authenticatedPage: page }) => {
-    await page.goto("/products");
-    await page.waitForTimeout(2000);
-    const card = page.locator('[class*="card"]').first();
-    await card.hover();
-    const wishBtn = card.locator('button[aria-label*="wishlist"]');
-    if (await wishBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await wishBtn.click();
-      await page.waitForTimeout(1000);
-      await page.screenshot({ path: "e2e/screenshots/product-wishlist-toggled-card.png" });
-    }
+    await expect(page.locator('[class*="grid"]').first()).toBeVisible();
+    await page.screenshot({ path: "e2e/screenshots/pw-products-grid.png" });
   });
 });
 
-test.describe("Product Listing - Mobile", () => {
+test.describe("Products – Filters", () => {
+  test("category filter section exists", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.getByText(/categories/i).first()).toBeVisible();
+  });
+
+  test("brand filter section exists", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.getByText(/brands/i).first()).toBeVisible();
+  });
+
+  test("price range filter exists", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.getByText(/price/i).first()).toBeVisible();
+  });
+
+  test("rating filter exists", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.getByText(/rating/i).first()).toBeVisible();
+  });
+
+  test("stock filter exists", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.getByText(/stock|availability/i).first()).toBeVisible();
+  });
+
+  test("clear filters button exists", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.getByText(/clear/i).first()).toBeVisible();
+  });
+
+  test("sort dropdown exists", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.locator("select, [role='combobox']").first()).toBeVisible();
+  });
+});
+
+test.describe("Products – Product Cards", () => {
+  test("product card has image", async ({ page }) => {
+    await page.goto("/products");
+    await page.waitForTimeout(3000);
+    const card = page.locator('[class*="card"]').filter({ has: page.locator('a[href*="/products/"]') }).first();
+    await expect(card.locator("img")).toBeVisible();
+  });
+
+  test("product card has name", async ({ page }) => {
+    await page.goto("/products");
+    await page.waitForTimeout(3000);
+    const card = page.locator('[class*="card"]').filter({ has: page.locator('a[href*="/products/"]') }).first();
+    await expect(card.locator("h3")).toBeVisible();
+  });
+
+  test("product card has price", async ({ page }) => {
+    await page.goto("/products");
+    await page.waitForTimeout(3000);
+    const text = await page.locator('[class*="card"]').filter({ has: page.locator('a[href*="/products/"]') }).first().textContent();
+    expect(text).toMatch(/\$/);
+  });
+
+  test("product card links to detail page", async ({ page }) => {
+    await page.goto("/products");
+    await page.waitForTimeout(3000);
+    await page.locator('a[href*="/products/"]').first().click();
+    await expect(page).toHaveURL(/\/products\/.+/);
+  });
+});
+
+test.describe("Products – Pagination", () => {
+  test("pagination controls visible", async ({ page }) => {
+    await page.goto("/products");
+    await page.waitForTimeout(3000);
+    const pagination = page.locator('[class*="pagination"], nav').filter({ hasText: /next|previous|\d/ });
+    await expect(pagination.first()).toBeVisible();
+  });
+});
+
+test.describe("Products – Mobile", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
-  test("opens mobile filter sheet", async ({ page }) => {
+  test("mobile shows filter toggle button", async ({ page }) => {
     await page.goto("/products");
-    await page.waitForTimeout(2000);
-    const filterBtn = page.getByText("Filters");
-    if (await filterBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await filterBtn.click();
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: "e2e/screenshots/mobile-filters.png" });
-    }
+    await expect(page.getByText(/filter/i).first()).toBeVisible();
+    await page.screenshot({ path: "e2e/screenshots/pw-products-mobile.png" });
   });
 });

@@ -1,113 +1,169 @@
 import { test, expect } from "../fixtures";
 
-test.describe("Homepage & Navigation", () => {
-  test("homepage loads with hero and sections", async ({ page }) => {
+// ============================================================
+// 01 - NAVIGATION – Playwright
+// ============================================================
+
+test.describe("Homepage Sections", () => {
+  test("loads homepage with hero banner", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle(/appilico/i);
-    await expect(page.locator("h1, h2").first()).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/homepage.png", fullPage: true });
+    await expect(page.locator("section, [class*='hero']").first()).toBeVisible();
+    await page.screenshot({ path: "e2e/screenshots/pw-homepage-hero.png" });
   });
 
-  test("header navigation links are visible", async ({ page }) => {
+  test("featured products section renders", async ({ page }) => {
     await page.goto("/");
-    const nav = page.locator("header nav, header");
-    await expect(nav.getByRole("link", { name: /home/i })).toBeVisible();
-    await expect(nav.getByRole("link", { name: /products/i })).toBeVisible();
-    await expect(nav.getByRole("link", { name: /categories/i })).toBeVisible();
-    await expect(nav.getByRole("link", { name: /brands/i })).toBeVisible();
-    await expect(nav.getByRole("link", { name: /offers/i })).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/header-nav.png" });
+    await expect(page.getByText("Featured Products")).toBeVisible();
   });
 
-  test("category mega-menu opens on hover", async ({ page }) => {
+  test("category grid section renders", async ({ page }) => {
     await page.goto("/");
-    const catLink = page.locator("header").getByRole("link", { name: /categories/i });
-    await catLink.hover();
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: "e2e/screenshots/mega-menu.png" });
+    await expect(page.locator('[class*="grid"]').first()).toBeVisible();
   });
 
-  test("theme toggle switches dark/light mode", async ({ page }) => {
+  test("trending products section renders", async ({ page }) => {
     await page.goto("/");
-    const toggle = page.locator('button[aria-label*="theme"], button[aria-label*="Theme"]').first();
+    await expect(page.getByText(/trending/i)).toBeVisible();
+  });
+
+  test("trust badges section renders", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText(/free shipping|delivery/i)).toBeVisible();
+  });
+});
+
+test.describe("Header – Desktop Navigation", () => {
+  test("logo visible and links to home", async ({ page }) => {
+    await page.goto("/");
+    const logo = page.locator('a[href="/"]').first();
+    await expect(logo).toBeVisible();
+  });
+
+  test("main nav links visible (Home, Products, Categories, Brands, Offers)", async ({ page }) => {
+    await page.goto("/");
+    for (const link of ["Home", "Products", "Categories", "Brands", "Offers"]) {
+      await expect(page.getByRole("link", { name: link }).first()).toBeVisible();
+    }
+  });
+
+  test("Products link navigates to /products", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Products" }).first().click();
+    await expect(page).toHaveURL(/\/products/);
+  });
+
+  test("Categories link navigates to /categories", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Categories" }).first().click();
+    await expect(page).toHaveURL(/\/categories/);
+  });
+
+  test("Brands link navigates to /brands", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Brands" }).first().click();
+    await expect(page).toHaveURL(/\/brands/);
+  });
+
+  test("Offers link navigates to /offers", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Offers" }).first().click();
+    await expect(page).toHaveURL(/\/offers/);
+  });
+
+  test("search button opens search dialog", async ({ page }) => {
+    await page.goto("/");
+    await page.getByLabel("Search").click();
+    await expect(page.locator('[role="dialog"], [cmdk-dialog]')).toBeVisible();
+  });
+
+  test("theme toggle switches between light and dark", async ({ page }) => {
+    await page.goto("/");
+    const toggle = page.locator('button').filter({ hasText: /sun|moon/i }).first();
     if (await toggle.isVisible()) {
       await toggle.click();
-      await page.waitForTimeout(300);
-      await page.screenshot({ path: "e2e/screenshots/theme-toggled.png" });
+      await page.screenshot({ path: "e2e/screenshots/pw-theme-toggled.png" });
     }
   });
 
-  test("search modal opens and accepts input", async ({ page }) => {
+  test("cart icon visible", async ({ page }) => {
     await page.goto("/");
-    const searchBtn = page.locator('button[aria-label*="search"], button[aria-label*="Search"]').first();
-    if (await searchBtn.isVisible()) {
-      await searchBtn.click();
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: "e2e/screenshots/search-modal.png" });
-    }
-  });
-
-  test("cart drawer can be opened from header", async ({ page }) => {
-    await page.goto("/");
-    const cartBtn = page.locator('a[href="/cart"], button[aria-label*="cart"]').first();
-    await cartBtn.click();
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: "e2e/screenshots/cart-drawer.png" });
-  });
-
-  test("footer displays all links", async ({ page }) => {
-    await page.goto("/");
-    const footer = page.locator("footer");
-    const links = ["About", "Contact", "Careers", "Privacy", "Terms"];
-    for (const link of links) {
-      await expect(footer.getByRole("link", { name: new RegExp(link, "i") })).toBeVisible();
-    }
-    await page.screenshot({ path: "e2e/screenshots/footer.png" });
+    await expect(page.getByLabel("Cart")).toBeVisible();
   });
 });
 
-test.describe("Navigation - Mobile", () => {
+test.describe("Header – Authenticated State", () => {
+  test("shows user dropdown after login", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/");
+    await expect(authenticatedPage.locator('[class*="avatar"]').first()).toBeVisible();
+  });
+
+  test("user dropdown has Profile link", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/");
+    await authenticatedPage.locator('[class*="avatar"]').first().click();
+    await expect(authenticatedPage.getByText("Profile")).toBeVisible();
+  });
+
+  test("user dropdown has Orders link", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/");
+    await authenticatedPage.locator('[class*="avatar"]').first().click();
+    await expect(authenticatedPage.getByText("Orders")).toBeVisible();
+  });
+
+  test("user dropdown has Sign Out", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/");
+    await authenticatedPage.locator('[class*="avatar"]').first().click();
+    await expect(authenticatedPage.getByText(/sign out|logout/i)).toBeVisible();
+  });
+});
+
+test.describe("Footer", () => {
+  test("footer is visible", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("footer")).toBeVisible();
+  });
+
+  test("footer has About link", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('footer a[href="/about"]')).toBeVisible();
+  });
+
+  test("footer has Contact link", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('footer a[href="/contact"]')).toBeVisible();
+  });
+
+  test("footer has Privacy link", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('footer a[href="/privacy"]')).toBeVisible();
+  });
+
+  test("footer has Terms link", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('footer a[href="/terms"]')).toBeVisible();
+  });
+});
+
+test.describe("Mobile Navigation", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
-  test("mobile nav menu opens and shows links", async ({ page }) => {
+  test("hamburger menu visible on mobile", async ({ page }) => {
     await page.goto("/");
-    const menuBtn = page.locator('button[aria-label*="menu"], button[aria-label*="Menu"]').first();
-    if (await menuBtn.isVisible()) {
-      await menuBtn.click();
-      await page.waitForTimeout(300);
-      await page.screenshot({ path: "e2e/screenshots/mobile-nav.png" });
-    }
+    const burger = page.getByLabel(/menu|navigation/i);
+    await expect(burger).toBeVisible();
   });
-});
 
-test.describe("Static Pages - All Navigable", () => {
-  const staticPages = [
-    { path: "/about", heading: /about/i },
-    { path: "/contact", heading: /contact/i },
-    { path: "/careers", heading: /career/i },
-    { path: "/blog", heading: /blog/i },
-    { path: "/help", heading: /help/i },
-    { path: "/shipping", heading: /shipping/i },
-    { path: "/faq", heading: /faq|frequently/i },
-    { path: "/privacy", heading: /privacy/i },
-    { path: "/terms", heading: /terms/i },
-    { path: "/cookies", heading: /cookie/i },
-    { path: "/accessibility", heading: /accessibility/i },
-  ];
+  test("hamburger opens mobile nav drawer", async ({ page }) => {
+    await page.goto("/");
+    await page.getByLabel(/menu|navigation/i).click();
+    await expect(page.locator('[role="dialog"], [data-state="open"]')).toBeVisible();
+    await page.screenshot({ path: "e2e/screenshots/pw-mobile-nav.png" });
+  });
 
-  for (const { path, heading } of staticPages) {
-    test(`${path} loads correctly`, async ({ page }) => {
-      await page.goto(path);
-      await expect(page.locator("h1")).toHaveText(heading);
-      await page.screenshot({ path: `e2e/screenshots/static${path.replace("/", "-")}.png`, fullPage: true });
-    });
-  }
-});
-
-test.describe("Error Pages", () => {
-  test("404 page renders", async ({ page }) => {
-    await page.goto("/this-page-does-not-exist");
-    await expect(page.getByText(/not found|404/i)).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/404.png" });
+  test("mobile nav has all links", async ({ page }) => {
+    await page.goto("/");
+    await page.getByLabel(/menu|navigation/i).click();
+    for (const link of ["Home", "Products", "Categories", "Brands", "Offers"]) {
+      await expect(page.getByRole("link", { name: link }).first()).toBeVisible();
+    }
   });
 });

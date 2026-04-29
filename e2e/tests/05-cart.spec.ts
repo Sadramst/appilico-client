@@ -1,63 +1,137 @@
 import { test, expect, API_URL } from "../fixtures";
 
-test.describe("Cart Page", () => {
-  test("shows cart with items after adding", async ({ authenticatedPage: page }) => {
-    // Add item via API
-    const token = await page.evaluate(() => localStorage.getItem("appilico_access_token"));
-    const prodResp = await page.request.get(`${API_URL}/products?page=1&pageSize=1`);
-    const prodBody = await prodResp.json();
-    if (prodBody.data?.length) {
-      await page.request.post(`${API_URL}/cart/items`, {
-        headers: { Authorization: `Bearer ${token}` },
-        data: { productId: prodBody.data[0].id, quantity: 2 },
-      });
-    }
-    await page.goto("/cart");
-    await page.waitForTimeout(2000);
-    await page.screenshot({ path: "e2e/screenshots/cart-with-items.png", fullPage: true });
+// ============================================================
+// 05 - CART – Playwright
+// ============================================================
+
+async function addItemViaAPI(page: any) {
+  const token = await page.evaluate(() => localStorage.getItem("appilico_access_token"));
+  const productsResp = await page.request.get(`${API_URL}/products?page=1&pageSize=1`);
+  const productsBody = await productsResp.json();
+  const product = productsBody.data[0];
+  if (product && token) {
+    await page.request.post(`${API_URL}/cart/items`, {
+      headers: { Authorization: `Bearer ${token}` },
+      data: { productId: product.id, quantity: 2 },
+    });
+  }
+}
+
+async function clearCartViaAPI(page: any) {
+  const token = await page.evaluate(() => localStorage.getItem("appilico_access_token"));
+  if (token) {
+    await page.request.delete(`${API_URL}/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+      failOnStatusCode: false,
+    });
+  }
+}
+
+test.describe("Cart Page – With Items", () => {
+  test.beforeEach(async ({ authenticatedPage }) => {
+    await addItemViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/cart");
+    await authenticatedPage.waitForTimeout(3000);
   });
 
-  test("shows subtotal and total", async ({ authenticatedPage: page }) => {
-    await page.goto("/cart");
-    await page.waitForTimeout(2000);
-    await expect(page.getByText(/subtotal/i)).toBeVisible();
-    await expect(page.getByText(/total/i)).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/cart-summary.png" });
+  test("renders Shopping Cart heading", async ({ authenticatedPage }) => {
+    await expect(authenticatedPage.getByText("Shopping Cart")).toBeVisible();
   });
 
-  test("proceed to checkout", async ({ authenticatedPage: page }) => {
-    await page.goto("/cart");
-    await page.waitForTimeout(2000);
-    const checkoutBtn = page.getByText(/proceed to checkout|checkout/i);
-    if (await checkoutBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await checkoutBtn.click();
-      await expect(page).toHaveURL(/\/checkout/);
-      await page.screenshot({ path: "e2e/screenshots/cart-to-checkout.png" });
-    }
+  test("shows cart item with product link", async ({ authenticatedPage }) => {
+    await expect(authenticatedPage.locator('a[href*="/products/"]').first()).toBeVisible();
   });
 
-  test("clears entire cart", async ({ authenticatedPage: page }) => {
-    await page.goto("/cart");
-    await page.waitForTimeout(2000);
-    const clearBtn = page.getByText(/clear cart/i);
-    if (await clearBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await clearBtn.click();
-      await page.waitForTimeout(1000);
-      await page.screenshot({ path: "e2e/screenshots/cart-cleared.png" });
-    }
+  test("shows item price", async ({ authenticatedPage }) => {
+    const text = await authenticatedPage.textContent("body");
+    expect(text).toMatch(/\$/);
+  });
+
+  test("shows quantity controls", async ({ authenticatedPage }) => {
+    await expect(authenticatedPage.locator("button").filter({ has: authenticatedPage.locator("svg") }).first()).toBeVisible();
+  });
+
+  test("shows subtotal", async ({ authenticatedPage }) => {
+    await expect(authenticatedPage.getByText(/subtotal/i)).toBeVisible();
+  });
+
+  test("shows total", async ({ authenticatedPage }) => {
+    await expect(authenticatedPage.getByText(/total/i).first()).toBeVisible();
+  });
+
+  test("Proceed to Checkout navigates", async ({ authenticatedPage }) => {
+    await authenticatedPage.getByText(/proceed to checkout|checkout/i).click();
+    await expect(authenticatedPage).toHaveURL(/checkout/);
+  });
+
+  test("Clear Cart removes all items", async ({ authenticatedPage }) => {
+    await authenticatedPage.getByText(/clear cart/i).click();
+    await authenticatedPage.waitForTimeout(2000);
+    await expect(authenticatedPage.getByText(/empty|no items/i)).toBeVisible();
+  });
+
+  test("screenshot cart page", async ({ authenticatedPage }) => {
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-cart-page.png" });
   });
 });
 
-test.describe("Cart - Empty State", () => {
-  test("shows empty cart message", async ({ authenticatedPage: page }) => {
-    // Clear cart via API
-    const token = await page.evaluate(() => localStorage.getItem("appilico_access_token"));
-    await page.request.delete(`${API_URL}/cart`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {});
-    await page.goto("/cart");
-    await page.waitForTimeout(2000);
-    await expect(page.getByText(/empty|no items/i)).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/cart-empty.png" });
+test.describe("Cart Page – Empty State", () => {
+  test("shows empty state", async ({ authenticatedPage }) => {
+    await clearCartViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/cart");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText(/empty|no items/i)).toBeVisible();
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-cart-empty.png" });
+  });
+
+  test("Start Shopping CTA links to products", async ({ authenticatedPage }) => {
+    await clearCartViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/cart");
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.getByText(/start shopping|browse/i).click();
+    await expect(authenticatedPage).toHaveURL(/products/);
+  });
+});
+
+test.describe("Cart Drawer", () => {
+  test("cart icon opens drawer", async ({ authenticatedPage }) => {
+    await addItemViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/");
+    await authenticatedPage.getByLabel("Cart").click();
+    await expect(authenticatedPage.locator('[role="dialog"]')).toBeVisible();
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-cart-drawer.png" });
+  });
+
+  test("drawer shows cart item", async ({ authenticatedPage }) => {
+    await addItemViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/");
+    await authenticatedPage.getByLabel("Cart").click();
+    await expect(authenticatedPage.locator('[role="dialog"]').locator('a[href*="/products/"]').first()).toBeVisible();
+  });
+
+  test("drawer shows subtotal", async ({ authenticatedPage }) => {
+    await addItemViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/");
+    await authenticatedPage.getByLabel("Cart").click();
+    await expect(authenticatedPage.locator('[role="dialog"]').getByText(/subtotal/i)).toBeVisible();
+  });
+
+  test("drawer checkout button navigates", async ({ authenticatedPage }) => {
+    await addItemViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/");
+    await authenticatedPage.getByLabel("Cart").click();
+    await authenticatedPage.locator('[role="dialog"]').getByText(/checkout/i).click();
+    await expect(authenticatedPage).toHaveURL(/checkout/);
+  });
+});
+
+test.describe("Cart – Mobile", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test("cart page stacks on mobile", async ({ authenticatedPage }) => {
+    await addItemViaAPI(authenticatedPage);
+    await authenticatedPage.goto("/cart");
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-cart-mobile.png" });
   });
 });

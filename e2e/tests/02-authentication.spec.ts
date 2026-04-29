@@ -1,98 +1,186 @@
-import { test, expect, CUSTOMER_EMAIL, CUSTOMER_PASSWORD } from "../fixtures";
+import { test, expect } from "../fixtures";
 
-test.describe("Login Page", () => {
-  test("renders login form with all elements", async ({ page }) => {
+// ============================================================
+// 02 - AUTHENTICATION – Playwright
+// ============================================================
+
+test.describe("Login Page – Rendering", () => {
+  test("renders login heading", async ({ page }) => {
     await page.goto("/login");
-    await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
-    await expect(page.locator('input[type="password"], input[name="password"]').first()).toBeVisible();
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
-    await expect(page.getByText(/forgot password/i)).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/login-page.png" });
+    await expect(page.getByText("Welcome back")).toBeVisible();
   });
 
-  test("shows validation errors on empty submit", async ({ page }) => {
+  test("renders email input", async ({ page }) => {
     await page.goto("/login");
-    await page.locator('button[type="submit"]').click();
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: "e2e/screenshots/login-validation.png" });
+    await expect(page.getByPlaceholder("name@example.com")).toBeVisible();
   });
 
-  test("shows error on invalid credentials", async ({ page }) => {
+  test("renders password input", async ({ page }) => {
     await page.goto("/login");
-    await page.locator('input[type="email"], input[name="email"]').fill("wrong@test.com");
-    await page.locator('input[type="password"], input[name="password"]').first().fill("WrongPass123!");
-    await page.locator('button[type="submit"]').click();
-    await page.waitForTimeout(3000);
-    await page.screenshot({ path: "e2e/screenshots/login-invalid.png" });
+    await expect(page.getByPlaceholder("••••••••")).toBeVisible();
   });
 
-  test("logs in successfully", async ({ page }) => {
+  test("renders Sign In button", async ({ page }) => {
     await page.goto("/login");
-    await page.locator('input[type="email"], input[name="email"]').fill(CUSTOMER_EMAIL);
-    await page.locator('input[type="password"], input[name="password"]').first().fill(CUSTOMER_PASSWORD);
-    await page.locator('button[type="submit"]').click();
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 15000 });
-    await page.screenshot({ path: "e2e/screenshots/login-success.png" });
+    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible();
   });
 
-  test("navigates to forgot password", async ({ page }) => {
+  test("renders Forgot password link", async ({ page }) => {
     await page.goto("/login");
-    await page.getByText(/forgot password/i).click();
-    await expect(page).toHaveURL(/\/forgot-password/);
-    await page.screenshot({ path: "e2e/screenshots/forgot-password.png" });
+    await expect(page.getByText("Forgot password?")).toBeVisible();
   });
 
-  test("navigates to register", async ({ page }) => {
+  test("renders Sign up link", async ({ page }) => {
     await page.goto("/login");
-    await page.getByText(/sign up|register|create/i).click();
-    await expect(page).toHaveURL(/\/register/);
+    await expect(page.getByText("Sign up")).toBeVisible();
   });
 });
 
-test.describe("Register Page", () => {
-  test("renders registration form", async ({ page }) => {
-    await page.goto("/register");
-    await expect(page.locator("input")).toHaveCount(/./, { timeout: 5000 });
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/register-page.png" });
+test.describe("Login – Validation", () => {
+  test("empty form shows email and password required", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await expect(page.getByText("Email is required")).toBeVisible();
+    await expect(page.getByText("Password is required")).toBeVisible();
   });
 
-  test("shows validation errors on empty submit", async ({ page }) => {
+  test("invalid email shows error", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByPlaceholder("name@example.com").fill("notanemail");
+    await page.getByPlaceholder("••••••••").fill("Test@1234");
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await expect(page.getByText("Invalid email address")).toBeVisible();
+  });
+});
+
+test.describe("Login – Submission", () => {
+  test("successful login redirects to home", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByPlaceholder("name@example.com").fill("customer1@appilico.com");
+    await page.getByPlaceholder("••••••••").fill("Customer@123!");
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await page.waitForURL("**/", { timeout: 15000 });
+    await expect(page).toHaveURL("/");
+  });
+
+  test("stores tokens in localStorage after login", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByPlaceholder("name@example.com").fill("customer1@appilico.com");
+    await page.getByPlaceholder("••••••••").fill("Customer@123!");
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await page.waitForURL("**/", { timeout: 15000 });
+    const token = await page.evaluate(() => localStorage.getItem("appilico_access_token"));
+    expect(token).toBeTruthy();
+  });
+
+  test("wrong credentials shows error", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByPlaceholder("name@example.com").fill("wrong@test.com");
+    await page.getByPlaceholder("••••••••").fill("WrongPass@1");
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await page.waitForTimeout(5000);
+    await page.screenshot({ path: "e2e/screenshots/pw-login-error.png" });
+  });
+
+  test("admin login redirects to /dashboard", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByPlaceholder("name@example.com").fill("admin@appilico.com");
+    await page.getByPlaceholder("••••••••").fill("Admin@123!");
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await page.waitForURL("**/dashboard", { timeout: 15000 });
+    await expect(page).toHaveURL(/dashboard/);
+  });
+});
+
+test.describe("Register Page – Rendering", () => {
+  test("renders Create an account heading", async ({ page }) => {
     await page.goto("/register");
-    await page.locator('button[type="submit"]').click();
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: "e2e/screenshots/register-validation.png" });
+    await expect(page.getByText("Create an account")).toBeVisible();
+  });
+
+  test("renders all registration fields", async ({ page }) => {
+    await page.goto("/register");
+    await expect(page.getByPlaceholder("John")).toBeVisible();
+    await expect(page.getByPlaceholder("Doe")).toBeVisible();
+    await expect(page.getByPlaceholder("name@example.com")).toBeVisible();
+  });
+
+  test("renders Create Account button", async ({ page }) => {
+    await page.goto("/register");
+    await expect(page.getByRole("button", { name: /create account/i })).toBeVisible();
+  });
+
+  test("renders Sign in link", async ({ page }) => {
+    await page.goto("/register");
+    await expect(page.getByText("Sign in")).toBeVisible();
+  });
+});
+
+test.describe("Register – Validation", () => {
+  test("empty form shows required errors", async ({ page }) => {
+    await page.goto("/register");
+    await page.getByRole("button", { name: /create account/i }).click();
+    await page.screenshot({ path: "e2e/screenshots/pw-register-validation.png" });
+  });
+
+  test("password too short shows error", async ({ page }) => {
+    await page.goto("/register");
+    await page.getByPlaceholder("John").fill("Test");
+    await page.getByPlaceholder("Doe").fill("User");
+    await page.getByPlaceholder("name@example.com").fill("test@test.com");
+    await page.locator('input[type="password"]').first().fill("short");
+    await page.locator('input[type="password"]').nth(1).fill("short");
+    await page.getByRole("button", { name: /create account/i }).click();
+    await expect(page.getByText(/at least 8/i)).toBeVisible();
+  });
+
+  test("passwords don't match shows error", async ({ page }) => {
+    await page.goto("/register");
+    await page.getByPlaceholder("John").fill("Test");
+    await page.getByPlaceholder("Doe").fill("User");
+    await page.getByPlaceholder("name@example.com").fill("test@test.com");
+    await page.locator('input[type="password"]').first().fill("Test@1234");
+    await page.locator('input[type="password"]').nth(1).fill("Different@1234");
+    await page.getByRole("button", { name: /create account/i }).click();
+    await expect(page.getByText("Passwords don't match")).toBeVisible();
   });
 });
 
 test.describe("Forgot Password Page", () => {
   test("renders forgot password form", async ({ page }) => {
     await page.goto("/forgot-password");
-    await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/forgot-password-page.png" });
+    await expect(page.getByPlaceholder("name@example.com")).toBeVisible();
+  });
+
+  test("shows validation error for empty email", async ({ page }) => {
+    await page.goto("/forgot-password");
+    await page.getByRole("button", { name: /reset|send/i }).click();
+    await expect(page.getByText(/email is required/i)).toBeVisible();
   });
 });
 
-test.describe("Authenticated Header", () => {
-  test("shows user avatar after login", async ({ authenticatedPage: page }) => {
-    await page.goto("/");
-    await expect(page.locator('[class*="avatar"], [class*="Avatar"]').first()).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/authenticated-header.png" });
+test.describe("Auth Guards", () => {
+  test("unauthenticated user redirected from /profile", async ({ page }) => {
+    await page.goto("/profile");
+    await page.waitForTimeout(3000);
+    await expect(page).toHaveURL(/login/);
   });
 
-  test("user dropdown shows profile, orders, addresses links", async ({ authenticatedPage: page }) => {
-    await page.goto("/");
-    await page.locator('[class*="avatar"], [class*="Avatar"]').first().click();
-    await page.waitForTimeout(300);
-    await expect(page.getByText("Profile")).toBeVisible();
-    await expect(page.getByText("My Orders")).toBeVisible();
-    await expect(page.getByText("Addresses")).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/user-dropdown.png" });
+  test("unauthenticated user redirected from /orders", async ({ page }) => {
+    await page.goto("/orders");
+    await page.waitForTimeout(3000);
+    await expect(page).toHaveURL(/login/);
   });
 
-  test("wishlist icon visible in header", async ({ authenticatedPage: page }) => {
-    await page.goto("/");
-    await expect(page.locator('a[href="/wishlist"]')).toBeVisible();
+  test("unauthenticated user redirected from /wishlist", async ({ page }) => {
+    await page.goto("/wishlist");
+    await page.waitForTimeout(3000);
+    await expect(page).toHaveURL(/login/);
+  });
+
+  test("unauthenticated user redirected from /checkout", async ({ page }) => {
+    await page.goto("/checkout");
+    await page.waitForTimeout(3000);
+    await expect(page).toHaveURL(/login/);
   });
 });

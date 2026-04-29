@@ -1,105 +1,171 @@
 import { test, expect } from "../fixtures";
 
+// ============================================================
+// 07 - ACCOUNT PAGES – Playwright
+// ============================================================
+
 test.describe("Profile Page", () => {
-  test("renders profile form with user info", async ({ authenticatedPage: page }) => {
-    await page.goto("/profile");
-    await page.waitForTimeout(2000);
-    await expect(page.locator("h1, h2").getByText(/profile/i)).toBeVisible();
-    await expect(page.locator("input")).toHaveCount(/./, { timeout: 5000 });
-    await page.screenshot({ path: "e2e/screenshots/profile.png", fullPage: true });
+  test("renders My Profile heading", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText("My Profile")).toBeVisible();
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-profile.png" });
   });
 
-  test("account sidebar shows all links", async ({ authenticatedPage: page }) => {
-    await page.goto("/profile");
-    await page.waitForTimeout(2000);
-    const sidebar = page.locator("aside, nav").filter({ has: page.locator('a[href="/profile"]') });
-    await expect(sidebar.getByText("Profile")).toBeVisible();
-    await expect(sidebar.getByText("Orders")).toBeVisible();
-    await expect(sidebar.getByText("Addresses")).toBeVisible();
-    await expect(sidebar.getByText("Wishlist")).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/profile-sidebar.png" });
+  test("shows user avatar", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.locator('[class*="avatar"]').first()).toBeVisible();
+  });
+
+  test("shows email with @ symbol", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    const text = await authenticatedPage.textContent("body");
+    expect(text).toMatch(/@/);
+  });
+
+  test("shows profile form with First Name field", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText("First Name")).toBeVisible();
+  });
+
+  test("shows Last Name field", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText("Last Name")).toBeVisible();
+  });
+
+  test("shows Phone Number field", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText(/phone/i)).toBeVisible();
+  });
+
+  test("Save Changes button exists", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByRole("button", { name: /save/i })).toBeVisible();
+  });
+
+  test("form is pre-filled", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    const val = await authenticatedPage.locator("input").first().inputValue();
+    expect(val.length).toBeGreaterThan(0);
+  });
+
+  test("sidebar shows Profile, Orders, Addresses, Wishlist", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    for (const link of ["Profile", "Orders", "Addresses", "Wishlist"]) {
+      await expect(authenticatedPage.locator("aside, nav").getByText(link).first()).toBeVisible();
+    }
   });
 });
 
-test.describe("Order History", () => {
-  test("renders orders page", async ({ authenticatedPage: page }) => {
-    await page.goto("/orders");
-    await page.waitForTimeout(2000);
-    await page.screenshot({ path: "e2e/screenshots/orders-page.png", fullPage: true });
+test.describe("Orders Page", () => {
+  test("renders My Orders heading", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/orders");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText("My Orders")).toBeVisible();
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-orders.png" });
   });
 
-  test("shows order cards or empty state", async ({ authenticatedPage: page }) => {
-    await page.goto("/orders");
-    await page.waitForTimeout(2000);
-    const hasOrders = await page.locator('a[href*="/orders/"]').count();
-    if (hasOrders > 0) {
-      await page.screenshot({ path: "e2e/screenshots/orders-with-items.png" });
-    } else {
-      await expect(page.getByText(/no orders|empty/i)).toBeVisible();
-      await page.screenshot({ path: "e2e/screenshots/orders-empty.png" });
-    }
+  test("shows order cards or empty state", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/orders");
+    await authenticatedPage.waitForTimeout(3000);
+    const text = await authenticatedPage.textContent("body");
+    expect(text!.match(/ORD-|no orders|empty/i)).toBeTruthy();
   });
 
-  test("navigates to order detail", async ({ authenticatedPage: page }) => {
-    await page.goto("/orders");
-    await page.waitForTimeout(2000);
-    const orderLink = page.locator('a[href*="/orders/"]').first();
-    if (await orderLink.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await orderLink.click();
-      await expect(page).toHaveURL(/\/orders\/.+/);
-      await page.screenshot({ path: "e2e/screenshots/order-detail.png", fullPage: true });
+  test("shows breadcrumbs", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/orders");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.locator('[class*="breadcrumb"]')).toBeVisible();
+  });
+});
+
+test.describe("Order Detail", () => {
+  test("navigates to order detail from orders list", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/orders");
+    await authenticatedPage.waitForTimeout(3000);
+    const link = authenticatedPage.locator('a[href*="/orders/"]').first();
+    if (await link.isVisible()) {
+      await link.click();
+      await authenticatedPage.waitForTimeout(3000);
+      await expect(authenticatedPage).toHaveURL(/\/orders\/.+/);
+      await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-order-detail.png" });
     }
   });
 });
 
-test.describe("Address Management", () => {
-  test("renders address page", async ({ authenticatedPage: page }) => {
-    await page.goto("/addresses");
-    await page.waitForTimeout(2000);
-    await page.screenshot({ path: "e2e/screenshots/addresses.png", fullPage: true });
+test.describe("Addresses Page", () => {
+  test("renders addresses page", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/addresses");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText(/address/i).first()).toBeVisible();
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-addresses.png" });
   });
 
-  test("opens add address dialog", async ({ authenticatedPage: page }) => {
-    await page.goto("/addresses");
-    await page.waitForTimeout(2000);
-    await page.getByText(/add address/i).first().click();
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
-    await page.screenshot({ path: "e2e/screenshots/addresses-add-dialog.png" });
+  test("Add Address button exists", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/addresses");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText(/add address/i)).toBeVisible();
   });
 
-  test("creates a new address", async ({ authenticatedPage: page }) => {
-    await page.goto("/addresses");
-    await page.waitForTimeout(2000);
-    await page.getByText(/add address/i).first().click();
-    const dialog = page.locator('[role="dialog"]');
-    await dialog.locator('input[id="title"]').fill("PW Test Address");
-    await dialog.locator('input[id="addressLine1"]').fill("321 Playwright St");
-    await dialog.locator('input[id="city"]').fill("Melbourne");
-    await dialog.locator('input[id="state"]').fill("VIC");
-    await dialog.locator('input[id="postalCode"]').fill("3000");
-    await dialog.locator('input[id="country"]').fill("Australia");
-    await dialog.locator('button[type="submit"]').click();
-    await page.waitForTimeout(2000);
-    await page.screenshot({ path: "e2e/screenshots/addresses-created.png" });
+  test("Add Address opens dialog", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/addresses");
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.getByText(/add address/i).first().click();
+    await expect(authenticatedPage.locator('[role="dialog"]')).toBeVisible();
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-add-address-dialog.png" });
+  });
+
+  test("dialog has multiple input fields", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/addresses");
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.getByText(/add address/i).first().click();
+    const inputs = authenticatedPage.locator('[role="dialog"] input');
+    expect(await inputs.count()).toBeGreaterThanOrEqual(4);
   });
 });
 
 test.describe("Wishlist Page", () => {
-  test("renders wishlist page", async ({ authenticatedPage: page }) => {
-    await page.goto("/wishlist");
-    await page.waitForTimeout(2000);
-    await page.screenshot({ path: "e2e/screenshots/wishlist.png", fullPage: true });
+  test("renders Wishlist heading", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/wishlist");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.getByText("Wishlist")).toBeVisible();
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-wishlist.png" });
   });
 
-  test("shows items or empty state", async ({ authenticatedPage: page }) => {
-    await page.goto("/wishlist");
-    await page.waitForTimeout(2000);
-    const cards = await page.locator('[class*="card"]').count();
-    if (cards > 1) {
-      await page.screenshot({ path: "e2e/screenshots/wishlist-with-items.png" });
-    } else {
-      await expect(page.getByText(/empty|no items/i)).toBeVisible();
-      await page.screenshot({ path: "e2e/screenshots/wishlist-empty.png" });
-    }
+  test("shows items or empty state", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/wishlist");
+    await authenticatedPage.waitForTimeout(3000);
+    const text = await authenticatedPage.textContent("body");
+    expect(text!.match(/\$|empty|no items/i)).toBeTruthy();
+  });
+
+  test("shows breadcrumbs", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/wishlist");
+    await authenticatedPage.waitForTimeout(3000);
+    await expect(authenticatedPage.locator('[class*="breadcrumb"]')).toBeVisible();
+  });
+});
+
+test.describe("Account – Mobile", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test("profile page on mobile", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/profile");
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-profile-mobile.png" });
+  });
+
+  test("orders page on mobile", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/orders");
+    await authenticatedPage.waitForTimeout(3000);
+    await authenticatedPage.screenshot({ path: "e2e/screenshots/pw-orders-mobile.png" });
   });
 });
