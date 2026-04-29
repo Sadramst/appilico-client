@@ -16,7 +16,20 @@ Cypress.Commands.add("login", (email?: string, password?: string) => {
       const { accessToken, refreshToken, user } = resp.body.data;
       window.localStorage.setItem("appilico_access_token", accessToken);
       window.localStorage.setItem("appilico_refresh_token", refreshToken);
-      window.localStorage.setItem("appilico_user", JSON.stringify(user));
+      // Store in Zustand persist format so isAuthenticated hydrates correctly
+      window.localStorage.setItem(
+        "appilico_user",
+        JSON.stringify({
+          state: {
+            user,
+            accessToken,
+            refreshToken,
+            isAuthenticated: true,
+            isLoading: false,
+          },
+          version: 0,
+        })
+      );
     });
   });
 });

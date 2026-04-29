@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["cypress/**/*.ts", "cypress.config.ts"]
+  "include": ["**/*.ts", "../cypress.config.ts"]
 }
