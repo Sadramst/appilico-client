@@ -21,12 +21,16 @@ import {
 } from "@/components/ui/form";
 import { useAuthStore } from "@/stores/auth-store";
 import { useAuth } from "@/hooks/use-auth";
+import { useMyCustomerProfile } from "@/hooks/use-customers";
 import { profileSchema, type TProfileFormData } from "@/lib/validators";
 import { getInitials } from "@/lib/utils";
+import { MembershipTierLabels } from "@/types/customer.types";
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
   const { updateProfile, isUpdatingProfile } = useAuth();
+  const { data: customerData } = useMyCustomerProfile();
+  const customer = customerData?.data;
 
   const form = useForm<TProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -74,6 +78,31 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Loyalty */}
+          {customer && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Loyalty & Membership</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-2xl font-bold text-primary">{customer.loyaltyPoints}</p>
+                    <p className="text-xs text-muted-foreground">Points</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{MembershipTierLabels[customer.membershipTier] ?? "Bronze"}</p>
+                    <p className="text-xs text-muted-foreground">Tier</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{customer.totalPurchases}</p>
+                    <p className="text-xs text-muted-foreground">Purchases</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Profile Form */}
           <Card>

@@ -38,7 +38,15 @@ export interface ICreateVoucherRequest {
   isSingleUse?: boolean;
 }
 
-export type IUpdateVoucherRequest = ICreateVoucherRequest;
+export interface IUpdateVoucherRequest {
+  description?: string;
+  value: number;
+  minOrderAmount?: number | null;
+  maxRedemptions?: number | null;
+  startDate: string;
+  expiryDate: string;
+  isActive: boolean;
+}
 
 export interface IValidateVoucherRequest {
   code: string;

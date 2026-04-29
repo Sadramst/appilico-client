@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authService } from "@/services/auth-service";
 import { useAuthStore } from "@/stores/auth-store";
+import { isAdminOrManager } from "@/lib/utils";
 import type { ILoginRequest, IRegisterRequest, IUpdateProfileRequest } from "@/types/auth.types";
 
 export function useAuth() {
@@ -25,7 +26,7 @@ export function useAuth() {
       const { user: userData, accessToken, refreshToken } = response.data;
       storeLogin(userData, accessToken, refreshToken);
       toast.success(`Welcome back, ${userData.firstName}!`);
-      if (userData.roles?.includes("Admin") || userData.roles?.includes("SuperAdmin")) {
+      if (isAdminOrManager(userData.roles)) {
         router.push("/dashboard");
       } else {
         router.push("/");

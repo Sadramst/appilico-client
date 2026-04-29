@@ -31,6 +31,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useCreateOrder } from "@/hooks/use-orders";
 import { useMyAddresses, useCreateAddress } from "@/hooks/use-customers";
 import { useValidateVoucher } from "@/hooks/use-vouchers";
+import { useValidateDiscount } from "@/hooks/use-discounts";
 import { PaymentMethodLabels } from "@/types/order.types";
 import { AddressTypeLabels, type ICustomerAddress } from "@/types/customer.types";
 
@@ -60,6 +61,7 @@ export function CheckoutForm() {
   const [paymentMethod, setPaymentMethod] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [voucherInput, setVoucherInput] = useState("");
+  const [discountInput, setDiscountInput] = useState("");
   const [addAddressOpen, setAddAddressOpen] = useState(false);
   const [addressForm, setAddressForm] = useState<AddressFormData>(emptyAddressForm);
 
@@ -68,6 +70,7 @@ export function CheckoutForm() {
   const { data: addressData, isLoading: loadingAddresses } = useMyAddresses();
   const createAddress = useCreateAddress();
   const validateVoucher = useValidateVoucher();
+  const validateDiscount = useValidateDiscount();
   const addresses = addressData?.data ?? [];
 
   // Auto-select default address
@@ -123,7 +126,24 @@ export function CheckoutForm() {
             setVoucher(voucherInput, data.data.discountAmount ?? 0);
             toast.success("Voucher applied!");
           } else {
-            toast.error("Invalid or expired voucher");
+            toast.error(data.data?.message ?? "Invalid or expired voucher");
+          }
+        },
+      }
+    );
+  };
+
+  const handleApplyDiscount = () => {
+    if (!discountInput.trim()) return;
+    validateDiscount.mutate(
+      { code: discountInput, orderAmount: subtotal },
+      {
+        onSuccess: (data) => {
+          if (data.data?.isValid) {
+            setVoucher(discountInput, data.data.discountAmount ?? 0);
+            toast.success("Discount applied!");
+          } else {
+            toast.error(data.data?.message ?? "Invalid discount code");
           }
         },
       }
@@ -408,6 +428,31 @@ export function CheckoutForm() {
                   disabled={validateVoucher.isPending}
                 >
                   {validateVoucher.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Apply"
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          {/* Discount Code */}
+          <Card>
+            <CardContent className="pt-6">
+              <Label htmlFor="discount" className="text-sm font-medium">Discount Code</Label>
+              <div className="flex gap-2 mt-2">
+                <Input
+                  id="discount"
+                  placeholder="Enter discount code"
+                  value={discountInput}
+                  onChange={(e) => setDiscountInput(e.target.value)}
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleApplyDiscount}
+                  disabled={validateDiscount.isPending}
+                >
+                  {validateDiscount.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     "Apply"

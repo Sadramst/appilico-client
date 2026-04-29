@@ -12,4 +12,6 @@ export interface ICreateBrandRequest {
   logoUrl?: string | null;
 }
 
-export type IUpdateBrandRequest = ICreateBrandRequest;
+export interface IUpdateBrandRequest extends ICreateBrandRequest {
+  isActive: boolean;
+}

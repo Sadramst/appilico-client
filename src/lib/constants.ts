@@ -5,6 +5,7 @@ export const APP_DESCRIPTION = "Your premium e-commerce destination";
 
 export const ROLES = {
   CUSTOMER: "Customer",
+  MANAGER: "Manager",
   ADMIN: "Admin",
   SUPER_ADMIN: "SuperAdmin",
 } as const;

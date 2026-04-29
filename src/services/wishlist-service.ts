@@ -1,20 +1,12 @@
 import apiClient from "./api-client";
 import type { IApiResponse } from "@/types/api.types";
-
-export interface IWishlistItem {
-  id: string;
-  productId: string;
-  productName: string;
-  price: number;
-  imageUrl: string | null;
-  addedAt: string;
-}
+import type { IProduct } from "@/types/product.types";
 
 const WISHLIST_BASE = "/wishlist";
 
 export const wishlistService = {
-  getAll: async (): Promise<IApiResponse<IWishlistItem[]>> => {
-    const response = await apiClient.get<IApiResponse<IWishlistItem[]>>(WISHLIST_BASE);
+  getAll: async (): Promise<IApiResponse<IProduct[]>> => {
+    const response = await apiClient.get<IApiResponse<IProduct[]>>(WISHLIST_BASE);
     return response.data;
   },
 

@@ -33,7 +33,13 @@ export interface ICreateOfferRequest {
   endDate: string;
 }
 
-export type IUpdateOfferRequest = ICreateOfferRequest;
+export interface IUpdateOfferRequest {
+  name: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
 
 export interface IAddOfferProductsRequest {
   products: {

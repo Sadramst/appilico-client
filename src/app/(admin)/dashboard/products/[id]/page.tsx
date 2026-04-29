@@ -29,7 +29,8 @@ import {
 import { useProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/use-products";
 import { useCategories } from "@/hooks/use-categories";
 import { useBrands } from "@/hooks/use-brands";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice, formatDate, canDelete } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth-store";
 
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -64,6 +65,8 @@ export default function AdminProductDetailPage({
   const brands = brandData?.data ?? [];
   const updateProduct = useUpdateProduct();
   const deleteProduct = useDeleteProduct();
+  const { user } = useAuthStore();
+  const showDelete = canDelete(user?.roles);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const form = useForm<ProductFormData>({
@@ -423,6 +426,7 @@ export default function AdminProductDetailPage({
 
           {/* Actions */}
           <div className="flex items-center justify-between border-t pt-6">
+            {showDelete ? (
             <Button
               type="button"
               variant="destructive"
@@ -431,6 +435,7 @@ export default function AdminProductDetailPage({
               <Trash2 className="h-4 w-4 mr-2" />
               Delete Product
             </Button>
+            ) : <div />}
             <div className="flex gap-3">
               <Button type="button" variant="outline" asChild>
                 <Link href="/dashboard/products">Cancel</Link>

@@ -36,7 +36,7 @@ export function useWishlist() {
   const toggleMutation = useMutation({
     mutationFn: async (productId: string) => {
       const items = wishlistQuery.data?.data ?? [];
-      const isInWishlist = items.some((item) => item.productId === productId);
+      const isInWishlist = items.some((item) => item.id === productId);
       if (isInWishlist) {
         return wishlistService.remove(productId);
       }
@@ -54,6 +54,6 @@ export function useWishlist() {
     remove: removeMutation.mutate,
     toggle: toggleMutation.mutate,
     isInWishlist: (productId: string) =>
-      (wishlistQuery.data?.data ?? []).some((item) => item.productId === productId),
+      (wishlistQuery.data?.data ?? []).some((item) => item.id === productId),
   };
 }

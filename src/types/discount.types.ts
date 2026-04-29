@@ -33,7 +33,17 @@ export interface ICreateDiscountRequest {
   usageLimit?: number | null;
 }
 
-export type IUpdateDiscountRequest = ICreateDiscountRequest;
+export interface IUpdateDiscountRequest {
+  name: string;
+  description?: string | null;
+  value: number;
+  minOrderAmount?: number | null;
+  maxDiscountAmount?: number | null;
+  startDate: string;
+  endDate: string;
+  usageLimit?: number | null;
+  isActive: boolean;
+}
 
 export interface IValidateDiscountRequest {
   code: string;

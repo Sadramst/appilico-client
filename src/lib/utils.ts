@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format, formatDistanceToNow, parseISO } from "date-fns";
-import { CURRENCY } from "./constants";
+import { CURRENCY, ROLES } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -66,4 +66,22 @@ export function getStockStatus(stock: number, threshold: number = 10): "in-stock
   if (stock <= 0) return "out-of-stock";
   if (stock <= threshold) return "low-stock";
   return "in-stock";
+}
+
+export function isAdmin(roles?: string[]): boolean {
+  if (!roles) return false;
+  return roles.includes(ROLES.ADMIN) || roles.includes(ROLES.SUPER_ADMIN);
+}
+
+export function isManager(roles?: string[]): boolean {
+  if (!roles) return false;
+  return roles.includes(ROLES.MANAGER);
+}
+
+export function isAdminOrManager(roles?: string[]): boolean {
+  return isAdmin(roles) || isManager(roles);
+}
+
+export function canDelete(roles?: string[]): boolean {
+  return isAdmin(roles);
 }

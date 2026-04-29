@@ -51,19 +51,27 @@ export default function WishlistPage() {
                   >
                     <Card className="overflow-hidden group">
                       <CardContent className="p-0">
-                        <Link href={`/products/${item.productId}`}>
-                          <div className="aspect-square bg-muted flex items-center justify-center text-3xl font-bold text-muted-foreground/20">
-                            {item.productName.charAt(0)}
-                          </div>
+                        <Link href={`/products/${item.id}`}>
+                          {item.primaryImageUrl ? (
+                            <img
+                              src={item.primaryImageUrl}
+                              alt={item.name}
+                              className="aspect-square w-full object-cover"
+                            />
+                          ) : (
+                            <div className="aspect-square bg-muted flex items-center justify-center text-3xl font-bold text-muted-foreground/20">
+                              {item.name.charAt(0)}
+                            </div>
+                          )}
                         </Link>
                         <div className="p-3 space-y-2">
                           <Link
-                            href={`/products/${item.productId}`}
+                            href={`/products/${item.id}`}
                             className="font-medium text-sm line-clamp-2 hover:text-primary transition-colors"
                           >
-                            {item.productName}
+                            {item.name}
                           </Link>
-                          <PriceTag price={item.price} size="sm" />
+                          <PriceTag price={item.basePrice} size="sm" />
                           <div className="flex gap-2">
                             <Button size="sm" className="flex-1 gap-1 text-xs">
                               <ShoppingCart className="h-3 w-3" />
@@ -74,7 +82,7 @@ export default function WishlistPage() {
                               variant="outline"
                               className="h-8 w-8 text-destructive hover:text-destructive"
                               onClick={() => {
-                                remove(item.productId);
+                                remove(item.id);
                               }}
                             >
                               <Trash2 className="h-3.5 w-3.5" />

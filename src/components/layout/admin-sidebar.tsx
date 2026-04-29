@@ -25,6 +25,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUIStore } from "@/stores/ui-store";
+import { useAuthStore } from "@/stores/auth-store";
+import { isAdmin } from "@/lib/utils";
 import { AppilicoLogo } from "@/components/shared/appilico-logo";
 import { ADMIN_NAV_LINKS } from "@/lib/constants";
 
@@ -47,7 +49,14 @@ const iconMap: Record<string, React.ElementType> = {
 export function AdminSidebar() {
   const pathname = usePathname();
   const { isSidebarOpen, toggleSidebar } = useUIStore();
+  const { user } = useAuthStore();
   const isSidebarCollapsed = !isSidebarOpen;
+  const userIsAdmin = isAdmin(user?.roles);
+
+  // Hide Settings from non-admin users (Manager can't access)
+  const navLinks = ADMIN_NAV_LINKS.filter(
+    (link) => link.label !== "Settings" || userIsAdmin
+  );
 
   return (
     <aside
@@ -82,7 +91,7 @@ export function AdminSidebar() {
       {/* Navigation */}
       <ScrollArea className="flex-1 py-4">
         <nav className="space-y-1 px-2">
-          {ADMIN_NAV_LINKS.map((link) => {
+          {navLinks.map((link) => {
             const Icon = iconMap[link.label] ?? LayoutDashboard;
             const isActive =
               link.href === "/dashboard"

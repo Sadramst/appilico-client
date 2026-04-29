@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,8 +9,21 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { useAuthStore } from "@/stores/auth-store";
+import { isAdmin } from "@/lib/utils";
 
 export default function AdminSettingsPage() {
+  const router = useRouter();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAdmin(user?.roles)) {
+      router.replace("/dashboard");
+    }
+  }, [user, router]);
+
+  if (!isAdmin(user?.roles)) return null;
+
   return (
     <div>
       <PageHeader title="Settings" description="Configure your store settings" />

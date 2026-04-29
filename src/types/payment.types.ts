@@ -17,11 +17,12 @@ export interface ICreatePaymentRequest {
 
 export interface IRefund {
   id: string;
+  orderId: string;
   paymentId: string;
   amount: number;
-  reason: string;
+  reason: string | null;
   status: number;
-  createdAt: string;
+  refundedAt: string | null;
 }
 
 export interface ICreateRefundRequest {

@@ -23,12 +23,16 @@ import { Label } from "@/components/ui/label";
 import { useCategories } from "@/hooks/use-categories";
 import { categoryService } from "@/services/category-service";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/stores/auth-store";
+import { canDelete } from "@/lib/utils";
 import type { ICategory, ICreateCategoryRequest } from "@/types/category.types";
 
 export default function AdminCategoriesPage() {
   const { data, isLoading } = useCategories();
   const categories = data?.data ?? [];
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+  const showDelete = canDelete(user?.roles);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ICategory | null>(null);
   const [deleteCategory, setDeleteCategory] = useState<ICategory | null>(null);
@@ -126,9 +130,11 @@ export default function AdminCategoriesPage() {
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(cat)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
+                      {showDelete && (
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteCategory(cat)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
+                      )}
                     </div>
                   </td>
                 </tr>

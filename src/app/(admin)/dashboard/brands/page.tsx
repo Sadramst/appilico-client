@@ -23,12 +23,16 @@ import { Label } from "@/components/ui/label";
 import { useBrands } from "@/hooks/use-brands";
 import { brandService } from "@/services/brand-service";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/stores/auth-store";
+import { canDelete } from "@/lib/utils";
 import type { IBrand, ICreateBrandRequest } from "@/types/brand.types";
 
 export default function AdminBrandsPage() {
   const { data, isLoading } = useBrands();
   const brands = data?.data ?? [];
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+  const showDelete = canDelete(user?.roles);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<IBrand | null>(null);
   const [deleteBrand, setDeleteBrand] = useState<IBrand | null>(null);
@@ -55,7 +59,7 @@ export default function AdminBrandsPage() {
     setSaving(true);
     try {
       if (editingBrand) {
-        await brandService.update(editingBrand.id, values);
+        await brandService.update(editingBrand.id, { ...values, isActive: editingBrand.isActive });
         toast.success("Brand updated");
       } else {
         await brandService.create(values);
@@ -124,9 +128,11 @@ export default function AdminBrandsPage() {
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(brand)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
+                      {showDelete && (
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteBrand(brand)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
