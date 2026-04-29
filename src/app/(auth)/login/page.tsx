@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useAuth } from "@/hooks/use-auth";
+import { AppilicoLogo } from "@/components/shared/appilico-logo";
 import { loginSchema, type TLoginFormData } from "@/lib/validators";
 
 export default function LoginPage() {
@@ -40,9 +41,7 @@ export default function LoginPage() {
       <Card>
         <CardHeader className="text-center space-y-2">
           <Link href="/" className="mx-auto flex items-center gap-2 mb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-              <span className="text-lg font-bold text-primary-foreground">A</span>
-            </div>
+            <AppilicoLogo size={40} />
           </Link>
           <h1 className="text-2xl font-bold">Welcome back</h1>
           <p className="text-sm text-muted-foreground">

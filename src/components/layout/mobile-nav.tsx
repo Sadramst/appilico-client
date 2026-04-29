@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Home, ShoppingBag, Tag, Layers, Zap, User, LogIn, LogOut, Heart } from "lucide-react";
+import { Home, ShoppingBag, Tag, Layers, Zap, User, LogIn, LogOut, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -114,11 +114,6 @@ export function MobileNav() {
           )}
         </div>
 
-        <SheetContent className="sr-only">
-          <button onClick={() => setMobileNavOpen(false)} aria-label="Close menu">
-            <X className="h-5 w-5" />
-          </button>
-        </SheetContent>
       </SheetContent>
     </Sheet>
   );

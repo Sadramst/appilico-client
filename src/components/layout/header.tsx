@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
+import { AppilicoLogo } from "@/components/shared/appilico-logo";
 import { useCart } from "@/hooks/use-cart";
 import { useAuthStore } from "@/stores/auth-store";
 import { useUIStore } from "@/stores/ui-store";
@@ -121,9 +122,7 @@ export function Header() {
           </Button>
 
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="text-sm font-bold text-primary-foreground">A</span>
-            </div>
+            <AppilicoLogo size={32} />
             <span className="text-xl font-bold hidden sm:inline-block">
               Appilico
             </span>

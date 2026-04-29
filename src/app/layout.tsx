@@ -56,7 +56,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} h-full`}>
       <head>
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/logo.svg" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="min-h-full flex flex-col font-sans antialiased">

@@ -25,6 +25,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUIStore } from "@/stores/ui-store";
+import { AppilicoLogo } from "@/components/shared/appilico-logo";
 import { ADMIN_NAV_LINKS } from "@/lib/constants";
 
 const iconMap: Record<string, React.ElementType> = {
@@ -59,9 +60,7 @@ export function AdminSidebar() {
       <div className="flex h-16 items-center justify-between px-4 border-b">
         {!isSidebarCollapsed && (
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
-              <span className="text-sm font-bold text-primary-foreground">A</span>
-            </div>
+            <AppilicoLogo size={32} />
             <span className="text-lg font-bold">Admin</span>
           </Link>
         )}

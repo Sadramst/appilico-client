@@ -5,6 +5,7 @@ import { Globe, MessageCircle, Camera, Play, Mail, MapPin, Phone } from "lucide-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { AppilicoLogo } from "@/components/shared/appilico-logo";
 
 const footerLinks = {
   shop: [
@@ -76,9 +77,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="text-sm font-bold text-primary-foreground">A</span>
-              </div>
+              <AppilicoLogo size={32} />
               <span className="text-xl font-bold">Appilico</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4 max-w-xs">
