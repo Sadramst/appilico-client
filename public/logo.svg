@@ -1,26 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" fill="none">
   <defs>
-    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#4F46E5"/>
-      <stop offset="50%" style="stop-color:#6366F1"/>
-      <stop offset="100%" style="stop-color:#818CF8"/>
+    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#2563eb"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#C7D2FE"/>
-      <stop offset="100%" style="stop-color:#E0E7FF"/>
+    <linearGradient id="arc-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1e3a8a"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
     </linearGradient>
   </defs>
-  <!-- Rounded square background -->
-  <rect width="512" height="512" rx="96" fill="url(#bg-grad)"/>
-  <!-- Stylized "A" letterform with shopping bag handle -->
-  <!-- Shopping bag body (the A shape) -->
-  <path d="M160 400 L256 112 L352 400 L320 400 L296 320 L216 320 L192 400 Z" fill="white" opacity="0.95"/>
-  <!-- Inner triangle cutout -->
-  <path d="M232 288 L256 208 L280 288 Z" fill="url(#bg-grad)"/>
-  <!-- Bag handles (arch on top) -->
-  <path d="M208 180 Q 208 100, 256 100 Q 304 100, 304 180" stroke="white" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
-  <!-- Small sparkle/star accent -->
-  <circle cx="370" cy="140" r="6" fill="url(#accent)"/>
-  <circle cx="386" cy="124" r="4" fill="url(#accent)" opacity="0.7"/>
-  <circle cx="354" cy="128" r="3" fill="url(#accent)" opacity="0.5"/>
+
+  <!-- Stylized "A" letterform - dark navy -->
+  <!-- Left leg -->
+  <path d="M180 460 L280 100 L320 100 L220 460 Z" fill="#0f172a"/>
+  <!-- Right leg -->
+  <path d="M380 460 L280 100 L320 100 L420 460 Z" fill="#0f172a"/>
+  <!-- Crossbar -->
+  <path d="M222 340 L378 340 L368 370 L232 370 Z" fill="#0f172a"/>
+
+  <!-- Blue arc/curve on upper right (like a swooping "P" tail) -->
+  <path d="M320 100 C 420 100, 470 160, 470 230 C 470 300, 420 340, 360 340 L340 340 C 390 330, 430 290, 430 230 C 430 170, 390 130, 320 130 Z" fill="url(#arc-grad)"/>
+
+  <!-- Small sparkle in center of A (4-point star) -->
+  <path d="M300 270 L303 260 L306 270 L316 273 L306 276 L303 286 L300 276 L290 273 Z" fill="#1e3a8a"/>
+
+  <!-- Small sparkle bottom-left accent -->
+  <path d="M156 440 L158 434 L160 440 L166 442 L160 444 L158 450 L156 444 L150 442 Z" fill="#0f172a" opacity="0.6"/>
+
+  <!-- APPILICO wordmark -->
+  <text x="300" y="540" text-anchor="middle" font-family="'Inter','Segoe UI',Arial,sans-serif" font-size="52" font-weight="600" letter-spacing="12" fill="#0f172a">APPILICO</text>
+
+  <!-- Decorative line with diamond below text -->
+  <line x1="180" y1="570" x2="275" y2="570" stroke="#1e3a8a" stroke-width="1.5"/>
+  <line x1="325" y1="570" x2="420" y2="570" stroke="#1e3a8a" stroke-width="1.5"/>
+  <!-- Center diamond -->
+  <path d="M300 562 L306 570 L300 578 L294 570 Z" fill="#1e3a8a"/>
 </svg>

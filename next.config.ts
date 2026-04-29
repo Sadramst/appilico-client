@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "appilico-server.onrender.com",
+        hostname: "api.appilico.com",
       },
       {
         protocol: "https",

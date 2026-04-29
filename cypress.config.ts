@@ -18,7 +18,7 @@ export default defineConfig({
       openMode: 0,
     },
     env: {
-      apiUrl: "https://appilico-server.onrender.com/api",
+      apiUrl: "https://api.appilico.com/api",
       customerEmail: "customer1@appilico.com",
       customerPassword: "Customer@123!",
       adminEmail: "admin@appilico.com",

@@ -5,7 +5,7 @@ import { test, expect } from "../fixtures";
 // ============================================================
 
 async function getProductUrl(page: any): Promise<string> {
-  const resp = await page.request.get("https://appilico-server.onrender.com/api/products?page=1&pageSize=1");
+  const resp = await page.request.get("https://api.appilico.com/api/products?page=1&pageSize=1");
   const body = await resp.json();
   return `/products/${body.data[0]?.id ?? ""}`;
 }

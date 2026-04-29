@@ -1,6 +1,6 @@
 import { test as base, expect, Page } from "@playwright/test";
 
-const API_URL = process.env.API_URL ?? "https://appilico-server.onrender.com/api";
+const API_URL = process.env.API_URL ?? "https://api.appilico.com/api";
 const CUSTOMER_EMAIL = process.env.CUSTOMER_EMAIL ?? "customer1@appilico.com";
 const CUSTOMER_PASSWORD = process.env.CUSTOMER_PASSWORD ?? "Customer@123!";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@appilico.com";
