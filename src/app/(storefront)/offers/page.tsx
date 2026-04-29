@@ -38,7 +38,7 @@ export default function OffersPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-600 to-purple-700 dark:from-indigo-900 dark:to-purple-950 text-white">
+                <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-800 to-emerald-900 dark:from-slate-900 dark:to-emerald-950 text-white">
                   <CardContent className="p-8 flex flex-col justify-between min-h-[250px]">
                     <div>
                       <Badge className="bg-white/20 text-white hover:bg-white/30 mb-4">

@@ -13,8 +13,8 @@ const features = [
 
 export function HeroBanner() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-indigo-900 dark:to-slate-900">
-      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:32px_32px]" />
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950">
+      <div className="absolute inset-0 bg-grid-white/[0.03] bg-[size:32px_32px]" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
 
       <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative z-10">
@@ -24,8 +24,8 @@ export function HeroBanner() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white/90 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            <span className="inline-flex items-center gap-2 bg-emerald-500/15 backdrop-blur-sm text-emerald-300 text-sm font-medium px-4 py-1.5 rounded-full mb-6 border border-emerald-500/20">
+              <Star className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" />
               New Collection 2025
             </span>
           </motion.div>
@@ -38,14 +38,14 @@ export function HeroBanner() {
           >
             Discover
             <br />
-            <span className="text-blue-200">Premium Products</span>
+            <span className="text-emerald-400">Premium Products</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-blue-100 mt-6 max-w-lg"
+            className="text-lg text-slate-300 mt-6 max-w-lg"
           >
             Explore our curated collection of high-quality products. From trending items
             to everyday essentials, find exactly what you need.
@@ -60,7 +60,7 @@ export function HeroBanner() {
             <Button
               asChild
               size="lg"
-              className="bg-white text-blue-700 hover:bg-blue-50 font-semibold"
+              className="bg-emerald-500 text-white hover:bg-emerald-400 font-semibold"
             >
               <Link href="/products">
                 <ShoppingBag className="h-4 w-4 mr-2" />
@@ -71,7 +71,7 @@ export function HeroBanner() {
               asChild
               variant="outline"
               size="lg"
-              className="border-white/30 text-white hover:bg-white/10"
+              className="border-white/20 text-white hover:bg-white/10"
             >
               <Link href="/offers">
                 View Offers
@@ -87,8 +87,8 @@ export function HeroBanner() {
             className="flex flex-wrap gap-6 mt-12"
           >
             {features.map((feature) => (
-              <div key={feature.text} className="flex items-center gap-2 text-blue-100 text-sm">
-                <feature.icon className="h-4 w-4" />
+              <div key={feature.text} className="flex items-center gap-2 text-slate-300 text-sm">
+                <feature.icon className="h-4 w-4 text-emerald-400" />
                 {feature.text}
               </div>
             ))}

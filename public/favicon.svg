@@ -1,18 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
   <defs>
-    <linearGradient id="arc" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#1e3a8a"/>
-      <stop offset="100%" style="stop-color:#3b82f6"/>
+    <linearGradient id="teal" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#34d399"/>
+      <stop offset="100%" style="stop-color:#6ee7b7"/>
     </linearGradient>
   </defs>
+  <!-- Dark background -->
+  <rect width="32" height="32" rx="6" fill="#0a0f1a"/>
   <!-- A left leg -->
-  <path d="M8 28 L14.5 4 L17.5 4 L11 28 Z" fill="#0f172a"/>
+  <path d="M8 26 L14.5 5 L17.5 5 L11 26 Z" fill="#f0f0f0"/>
   <!-- A right leg -->
-  <path d="M21 28 L14.5 4 L17.5 4 L24 28 Z" fill="#0f172a"/>
+  <path d="M21 26 L14.5 5 L17.5 5 L24 26 Z" fill="#e8e8e8"/>
   <!-- Crossbar -->
-  <path d="M11.5 20 L20.5 20 L20 22 L12 22 Z" fill="#0f172a"/>
-  <!-- Blue arc -->
-  <path d="M17.5 4 C 24 4, 27 7, 27 12 C 27 17, 24 20, 20 20 L18.5 20 C 22 19.5, 25 17, 25 12 C 25 8, 22 5.5, 17.5 5.5 Z" fill="url(#arc)"/>
-  <!-- Sparkle -->
-  <path d="M16 16 L16.3 15 L16.6 16 L17.6 16.3 L16.6 16.6 L16.3 17.3 L16 16.6 L15 16.3 Z" fill="#1e3a8a"/>
+  <path d="M12 19 L20 19 L19.5 21 L12.5 21 Z" fill="#f0f0f0"/>
+  <!-- Teal arc -->
+  <path d="M17.5 5 C 23 5, 26 8, 26 13 C 26 17, 24 19, 21 20 L22 20 C 25.5 18, 28 15, 28 12 C 28 7, 24 3.5, 17.5 4 Z" fill="url(#teal)"/>
+  <!-- Circuit dots -->
+  <circle cx="6" cy="12" r="1.2" fill="#34d399"/>
+  <line x1="6" y1="12" x2="10" y2="12" stroke="#34d399" stroke-width="0.8"/>
+  <circle cx="7" cy="15" r="1" fill="#34d399"/>
+  <line x1="7" y1="15" x2="11" y2="15" stroke="#34d399" stroke-width="0.8"/>
 </svg>

@@ -45,13 +45,13 @@ export default function ForgotPasswordPage() {
   if (submitted) {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <Card>
+        <Card className="bg-slate-900/80 backdrop-blur-xl border-slate-700/50 shadow-2xl">
           <CardContent className="pt-8 text-center space-y-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto">
-              <Mail className="h-8 w-8 text-primary" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 mx-auto">
+              <Mail className="h-8 w-8 text-emerald-400" />
             </div>
-            <h2 className="text-xl font-bold">Check your email</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-xl font-bold text-white">Check your email</h2>
+            <p className="text-sm text-slate-400">
               We&apos;ve sent a password reset link to your email address. Please check your inbox.
             </p>
             <Button asChild variant="outline" className="gap-2">
@@ -68,10 +68,10 @@ export default function ForgotPasswordPage() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <Card>
+      <Card className="bg-slate-900/80 backdrop-blur-xl border-slate-700/50 shadow-2xl">
         <CardHeader className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">Forgot password?</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold text-white">Forgot password?</h1>
+          <p className="text-sm text-slate-400">
             Enter your email and we&apos;ll send you a reset link
           </p>
         </CardHeader>

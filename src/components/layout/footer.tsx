@@ -45,14 +45,14 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-muted/50 border-t">
+    <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 border-t border-slate-800">
       {/* Newsletter Section */}
-      <div className="border-b">
+      <div className="border-b border-slate-800">
         <div className="container mx-auto px-4 py-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
-              <h3 className="text-lg font-semibold">Stay in the loop</h3>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h3 className="text-lg font-semibold text-white">Stay in the loop</h3>
+              <p className="text-sm text-slate-400 mt-1">
                 Subscribe to get special offers, free giveaways, and product launches.
               </p>
             </div>
@@ -63,9 +63,9 @@ export function Footer() {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="w-full md:w-72"
+                className="w-full md:w-72 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
               />
-              <Button type="submit">Subscribe</Button>
+              <Button type="submit" className="bg-emerald-500 hover:bg-emerald-400 text-white">Subscribe</Button>
             </form>
           </div>
         </div>
@@ -78,12 +78,12 @@ export function Footer() {
           <div className="col-span-2 md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <AppilicoLogo size={32} />
-              <span className="text-xl font-bold">Appilico</span>
+              <span className="text-xl font-bold text-white">Appilico</span>
             </Link>
-            <p className="text-sm text-muted-foreground mb-4 max-w-xs">
+            <p className="text-sm text-slate-400 mb-4 max-w-xs">
               Premium e-commerce experience with curated products and exceptional quality.
             </p>
-            <div className="space-y-2 text-sm text-muted-foreground">
+            <div className="space-y-2 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0" />
                 <span>123 Commerce St, NY 10001</span>
@@ -101,13 +101,13 @@ export function Footer() {
 
           {/* Shop */}
           <div>
-            <h4 className="font-semibold mb-4">Shop</h4>
+            <h4 className="font-semibold mb-4 text-white">Shop</h4>
             <ul className="space-y-2.5">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -118,13 +118,13 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-4">Company</h4>
+            <h4 className="font-semibold mb-4 text-white">Company</h4>
             <ul className="space-y-2.5">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -135,13 +135,13 @@ export function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="font-semibold mb-4">Support</h4>
+            <h4 className="font-semibold mb-4 text-white">Support</h4>
             <ul className="space-y-2.5">
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -152,12 +152,12 @@ export function Footer() {
         </div>
       </div>
 
-      <Separator />
+      <Separator className="bg-slate-800" />
 
       {/* Bottom Bar */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-slate-500">
             &copy; {new Date().getFullYear()} Appilico. All rights reserved.
           </p>
 
@@ -167,19 +167,19 @@ export function Footer() {
                 key={social.label}
                 href={social.href}
                 aria-label={social.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-emerald-500 hover:text-white transition-colors"
               >
                 <social.icon className="h-4 w-4" />
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-4 text-sm text-slate-500">
             {footerLinks.legal.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="hover:text-foreground transition-colors"
+                className="hover:text-emerald-400 transition-colors"
               >
                 {link.label}
               </Link>

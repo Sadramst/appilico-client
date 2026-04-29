@@ -38,13 +38,13 @@ export default function LoginPage() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <Card>
+      <Card className="bg-slate-900/80 backdrop-blur-xl border-slate-700/50 shadow-2xl">
         <CardHeader className="text-center space-y-2">
           <Link href="/" className="mx-auto flex items-center gap-2 mb-4">
             <AppilicoLogo size={40} />
           </Link>
-          <h1 className="text-2xl font-bold">Welcome back</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold text-white">Welcome back</h1>
+          <p className="text-sm text-slate-400">
             Sign in to your account to continue
           </p>
         </CardHeader>
@@ -115,7 +115,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-emerald-500 hover:bg-emerald-400 text-white"
                 disabled={isLoggingIn}
               >
                 {isLoggingIn && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
@@ -126,9 +126,9 @@ export default function LoginPage() {
         </CardContent>
 
         <CardFooter className="justify-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-slate-400">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-primary hover:underline">
+            <Link href="/register" className="font-medium text-emerald-400 hover:underline">
               Sign up
             </Link>
           </p>

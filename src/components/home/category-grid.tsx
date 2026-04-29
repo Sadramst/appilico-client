@@ -8,12 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCategories } from "@/hooks/use-categories";
 
 const categoryColors = [
-  "from-blue-500 to-blue-600",
-  "from-indigo-500 to-indigo-600",
-  "from-purple-500 to-purple-600",
-  "from-emerald-500 to-emerald-600",
-  "from-amber-500 to-amber-600",
-  "from-rose-500 to-rose-600",
+  "from-emerald-500 to-teal-600",
+  "from-teal-500 to-cyan-600",
+  "from-slate-700 to-slate-800",
+  "from-emerald-600 to-emerald-700",
+  "from-cyan-500 to-teal-500",
+  "from-slate-600 to-slate-700",
 ];
 
 export function CategoryGrid() {

@@ -1,38 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" fill="none">
   <defs>
-    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#0f172a"/>
-      <stop offset="100%" style="stop-color:#2563eb"/>
-    </linearGradient>
-    <linearGradient id="arc-grad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#1e3a8a"/>
-      <stop offset="100%" style="stop-color:#3b82f6"/>
+    <linearGradient id="teal-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#34d399"/>
+      <stop offset="100%" style="stop-color:#6ee7b7"/>
     </linearGradient>
   </defs>
 
-  <!-- Stylized "A" letterform - dark navy -->
+  <!-- Stylized "A" letterform - white/light gray -->
   <!-- Left leg -->
-  <path d="M180 460 L280 100 L320 100 L220 460 Z" fill="#0f172a"/>
+  <path d="M175 470 L282 95 L318 95 L215 470 Z" fill="#f0f0f0"/>
   <!-- Right leg -->
-  <path d="M380 460 L280 100 L320 100 L420 460 Z" fill="#0f172a"/>
+  <path d="M385 470 L282 95 L318 95 L425 470 Z" fill="#e8e8e8"/>
   <!-- Crossbar -->
-  <path d="M222 340 L378 340 L368 370 L232 370 Z" fill="#0f172a"/>
+  <path d="M228 340 L372 340 L362 370 L238 370 Z" fill="#f0f0f0"/>
 
-  <!-- Blue arc/curve on upper right (like a swooping "P" tail) -->
-  <path d="M320 100 C 420 100, 470 160, 470 230 C 470 300, 420 340, 360 340 L340 340 C 390 330, 430 290, 430 230 C 430 170, 390 130, 320 130 Z" fill="url(#arc-grad)"/>
+  <!-- Teal arc/brace on upper right -->
+  <path d="M318 95 C 410 95, 460 155, 460 225 C 460 280, 435 315, 400 340 L410 340 C 450 310, 480 265, 480 225 C 480 140, 420 75, 318 80 Z" fill="url(#teal-grad)" opacity="0.9"/>
 
-  <!-- Small sparkle in center of A (4-point star) -->
-  <path d="M300 270 L303 260 L306 270 L316 273 L306 276 L303 286 L300 276 L290 273 Z" fill="#1e3a8a"/>
+  <!-- Circuit lines on the left (3 horizontal lines with dots) -->
+  <line x1="100" y1="200" x2="175" y2="200" stroke="#34d399" stroke-width="3"/>
+  <circle cx="100" cy="200" r="5" fill="#34d399"/>
+  <line x1="110" y1="230" x2="185" y2="230" stroke="#34d399" stroke-width="3"/>
+  <circle cx="110" cy="230" r="5" fill="#34d399"/>
+  <line x1="120" y1="260" x2="195" y2="260" stroke="#34d399" stroke-width="3"/>
+  <circle cx="120" cy="260" r="5" fill="#34d399"/>
+  <!-- Vertical connecting line for circuits -->
+  <line x1="175" y1="200" x2="195" y2="260" stroke="#34d399" stroke-width="2.5"/>
 
-  <!-- Small sparkle bottom-left accent -->
-  <path d="M156 440 L158 434 L160 440 L166 442 L160 444 L158 450 L156 444 L150 442 Z" fill="#0f172a" opacity="0.6"/>
+  <!-- Tower/needle silhouette in center of A -->
+  <rect x="296" y="200" width="8" height="140" rx="2" fill="#d0d0d0" opacity="0.6"/>
+  <path d="M300 200 L290 245 L310 245 Z" fill="#d0d0d0" opacity="0.5"/>
+  <circle cx="300" cy="195" r="4" fill="#d0d0d0" opacity="0.6"/>
+  <!-- Tower observation deck -->
+  <ellipse cx="300" cy="250" rx="14" ry="4" fill="#d0d0d0" opacity="0.45"/>
+
+  <!-- Small sparkle accent -->
+  <path d="M300 280 L302 274 L304 280 L310 282 L304 284 L302 290 L300 284 L294 282 Z" fill="#34d399" opacity="0.7"/>
 
   <!-- APPILICO wordmark -->
-  <text x="300" y="540" text-anchor="middle" font-family="'Inter','Segoe UI',Arial,sans-serif" font-size="52" font-weight="600" letter-spacing="12" fill="#0f172a">APPILICO</text>
-
-  <!-- Decorative line with diamond below text -->
-  <line x1="180" y1="570" x2="275" y2="570" stroke="#1e3a8a" stroke-width="1.5"/>
-  <line x1="325" y1="570" x2="420" y2="570" stroke="#1e3a8a" stroke-width="1.5"/>
-  <!-- Center diamond -->
-  <path d="M300 562 L306 570 L300 578 L294 570 Z" fill="#1e3a8a"/>
+  <text x="300" y="545" text-anchor="middle" font-family="'Inter','Segoe UI',Arial,sans-serif" font-size="52" font-weight="500" letter-spacing="14" fill="#f0f0f0">APPILICO</text>
 </svg>
