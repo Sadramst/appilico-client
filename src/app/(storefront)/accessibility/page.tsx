@@ -23,7 +23,7 @@ export default function AccessibilityPage() {
         <h2>Feedback</h2>
         <p>
           If you encounter any accessibility issues, please contact us at{" "}
-          <strong>accessibility@appilico.com</strong> and we will address them
+          <strong>accessibility@appilico.store</strong> and we will address them
           promptly.
         </p>
       </div>

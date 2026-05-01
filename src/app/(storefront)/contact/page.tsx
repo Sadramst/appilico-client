@@ -17,7 +17,7 @@ export default function ContactPage() {
             <CardContent className="p-6 flex flex-col items-center text-center gap-2">
               <Mail className="h-8 w-8 text-primary" />
               <h3 className="font-semibold">Email</h3>
-              <p className="text-sm text-muted-foreground">hello@appilico.com</p>
+              <p className="text-sm text-muted-foreground">hello@appilico.store</p>
             </CardContent>
           </Card>
           <Card>

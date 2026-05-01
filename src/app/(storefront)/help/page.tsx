@@ -31,7 +31,7 @@ const helpTopics = [
   {
     question: "How do I contact customer support?",
     answer:
-      "You can reach us via email at hello@appilico.com or call us at +1 (555) 123-4567 during business hours.",
+      "You can reach us via email at hello@appilico.store or call us at +1 (555) 123-4567 during business hours.",
   },
 ];
 

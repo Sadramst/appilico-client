@@ -94,7 +94,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
-                <span>hello@appilico.com</span>
+                <span>hello@appilico.store</span>
               </div>
             </div>
           </div>

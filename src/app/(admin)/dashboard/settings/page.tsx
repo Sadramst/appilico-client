@@ -41,7 +41,7 @@ export default function AdminSettingsPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="storeEmail">Support Email</Label>
-              <Input id="storeEmail" type="email" defaultValue="support@appilico.com" />
+              <Input id="storeEmail" type="email" defaultValue="support@appilico.store" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="storePhone">Phone</Label>

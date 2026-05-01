@@ -15,7 +15,7 @@ export default function CareersPage() {
         <h2>Current Openings</h2>
         <p className="text-muted-foreground">
           There are no open positions at the moment. Please check back later or
-          send your CV to <strong>careers@appilico.com</strong>.
+          send your CV to <strong>careers@appilico.store</strong>.
         </p>
       </div>
     </div>

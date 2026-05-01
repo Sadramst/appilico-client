@@ -21,7 +21,7 @@ export default function ShippingPage() {
         </ul>
         <p>
           For return requests, please contact us at{" "}
-          <strong>hello@appilico.com</strong>.
+          <strong>hello@appilico.store</strong>.
         </p>
       </div>
     </div>

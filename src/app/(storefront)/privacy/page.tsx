@@ -28,7 +28,7 @@ export default function PrivacyPage() {
         <h2>Contact</h2>
         <p>
           For privacy-related inquiries, email us at{" "}
-          <strong>privacy@appilico.com</strong>.
+          <strong>privacy@appilico.store</strong>.
         </p>
       </div>
     </div>
