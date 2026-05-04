@@ -1,64 +1,52 @@
-"use client";
-
-import { use } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { ProductGallery } from "@/components/product/product-gallery";
-import { ProductInfo } from "@/components/product/product-info";
-import { ProductReviews } from "@/components/product/product-reviews";
-import { LoadingSpinner } from "@/components/shared/loading-spinner";
-import { Separator } from "@/components/ui/separator";
-import { useProduct } from "@/hooks/use-products";
-import { useProductReviews } from "@/hooks/use-reviews";
+import { ProductDetailClient } from "./product-detail-client";
 
-export default function ProductDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = use(params);
-  const { data: productData, isLoading, error } = useProduct(slug);
-  const product = productData?.data;
+type Props = { params: Promise<{ slug: string }> };
 
-  const { data: reviewsData, isLoading: reviewsLoading } = useProductReviews(
-    product?.id ?? "",
-    { page: 1, pageSize: 10 }
-  );
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <LoadingSpinner size="lg" />
-      </div>
+async function fetchProduct(slug: string) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL ?? "https://api.appilico.com/api/v1"}/products/${slug}`,
+      { next: { revalidate: 60 } }
     );
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await fetchProduct(slug);
+
+  if (!product) {
+    return { title: "Product Not Found" };
   }
 
-  if (error || !product) {
-    notFound();
-  }
+  const imageUrl = product.primaryImageUrl ?? product.images?.[0]?.imageUrl;
 
-  const reviews = reviewsData?.data ?? [];
+  return {
+    title: product.name,
+    description: product.description?.slice(0, 160) ?? product.name,
+    openGraph: {
+      title: product.name,
+      description: product.description?.slice(0, 160) ?? product.name,
+      images: imageUrl ? [{ url: imageUrl, alt: product.name }] : [],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.description?.slice(0, 160) ?? product.name,
+      images: imageUrl ? [imageUrl] : [],
+    },
+  };
+}
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <Breadcrumbs />
-
-      <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mt-6">
-        <ProductGallery images={product.images} productName={product.name} />
-        <ProductInfo product={product} />
-      </div>
-
-      {/* Reviews */}
-      <Separator className="my-12" />
-      <section>
-        <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
-        <ProductReviews
-          reviews={reviews}
-          averageRating={product.averageRating}
-          reviewCount={product.totalReviews}
-          isLoading={reviewsLoading}
-        />
-      </section>
-    </div>
-  );
+export default async function ProductDetailPage({ params }: Props) {
+  const { slug } = await params;
+  return <ProductDetailClient slug={slug} />;
 }

@@ -1,6 +1,6 @@
 export const config = {
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "https://api.appilico.com/api",
+    baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "https://api.appilico.com/api/v1",
     timeout: 15000,
   },
   auth: {

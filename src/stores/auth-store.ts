@@ -5,6 +5,19 @@ import { persist } from "zustand/middleware";
 import type { IUser } from "@/types/auth.types";
 import { config } from "@/lib/config";
 
+const COOKIE_NAME = "appilico_access_token";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+
+function setCookie(name: string, value: string) {
+  if (typeof document === "undefined") return;
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Strict`;
+}
+
+function clearCookie(name: string) {
+  if (typeof document === "undefined") return;
+  document.cookie = `${name}=; path=/; max-age=0`;
+}
+
 interface AuthState {
   user: IUser | null;
   accessToken: string | null;
@@ -34,6 +47,7 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== "undefined") {
           localStorage.setItem(config.auth.tokenKey, accessToken);
           localStorage.setItem(config.auth.refreshTokenKey, refreshToken);
+          setCookie(COOKIE_NAME, accessToken);
         }
         set({ accessToken, refreshToken });
       },
@@ -42,6 +56,7 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== "undefined") {
           localStorage.setItem(config.auth.tokenKey, accessToken);
           localStorage.setItem(config.auth.refreshTokenKey, refreshToken);
+          setCookie(COOKIE_NAME, accessToken);
         }
         set({
           user,
@@ -56,6 +71,7 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== "undefined") {
           localStorage.removeItem(config.auth.tokenKey);
           localStorage.removeItem(config.auth.refreshTokenKey);
+          clearCookie(COOKIE_NAME);
         }
         set({
           user: null,

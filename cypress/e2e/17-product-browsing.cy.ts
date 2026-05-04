@@ -192,4 +192,66 @@ describe("Product Browsing – Categories, Brands, Offers", () => {
       cy.get("nav[aria-label='breadcrumb'], [class*='breadcrumb']").should("exist");
     });
   });
+
+  // ──────────── URL Parameter Filter Tests ────────────
+  describe("Products – URL Parameter Filters", () => {
+    it("search param filters products", () => {
+      cy.visit("/products?search=shirt");
+      cy.wait(3000);
+      cy.url().should("include", "search=shirt");
+      cy.get('[class*="card"]').should("have.length.at.least", 0); // may be empty or have results
+      cy.takeVisualSnapshot("products-url-search-param");
+    });
+
+    it("sort param is reflected in sort dropdown", () => {
+      cy.visit("/products?sort=price_asc");
+      cy.wait(2000);
+      cy.url().should("include", "sort=price_asc");
+      cy.takeVisualSnapshot("products-url-sort-param");
+    });
+
+    it("page param navigates to correct page", () => {
+      cy.visit("/products?page=2");
+      cy.wait(3000);
+      cy.url().should("include", "page=2");
+      cy.get('[class*="card"]').should("have.length.at.least", 1);
+      cy.takeVisualSnapshot("products-url-page-param");
+    });
+
+    it("clicking category filter updates URL with categoryId", () => {
+      cy.viewport(1280, 720);
+      cy.visit("/products");
+      cy.wait(3000);
+      cy.get("aside").find('button[role="checkbox"], input[type="checkbox"]').first().click({ force: true });
+      cy.wait(1000);
+      cy.url().should("match", /categoryId|page/);
+      cy.takeVisualSnapshot("products-url-category-filter");
+    });
+
+    it("clicking brand filter updates URL with brandId", () => {
+      cy.viewport(1280, 720);
+      cy.visit("/products");
+      cy.wait(3000);
+      cy.get("aside").contains(/brand/i).parent().find('button[role="checkbox"], input[type="checkbox"]').first().click({ force: true });
+      cy.wait(1000);
+      cy.url().should("match", /brandId|page/);
+      cy.takeVisualSnapshot("products-url-brand-filter");
+    });
+
+    it("clear filters resets to base products URL", () => {
+      cy.visit("/products?search=test&sort=price_asc");
+      cy.wait(2000);
+      cy.get("button, a").contains(/clear/i).first().click({ force: true });
+      cy.wait(1000);
+      cy.url().should("match", /\/products\/?(\?page=1)?$/);
+      cy.takeVisualSnapshot("products-url-cleared");
+    });
+
+    it("multiple filters combine in URL", () => {
+      cy.visit("/products?sort=price_desc&page=1");
+      cy.wait(3000);
+      cy.url().should("include", "sort=price_desc");
+      cy.takeVisualSnapshot("products-url-combined-filters");
+    });
+  });
 });

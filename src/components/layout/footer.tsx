@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Globe, MessageCircle, Camera, Play, Mail, MapPin, Phone } from "lucide-react";
+import { Globe, MessageCircle, Camera, Play, Mail, MapPin } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { AppilicoLogo } from "@/components/shared/appilico-logo";
+import apiClient from "@/services/api-client";
 
 const footerLinks = {
   shop: [
@@ -34,6 +37,12 @@ const footerLinks = {
     { label: "Cookie Policy", href: "/cookies" },
     { label: "Accessibility", href: "/accessibility" },
   ],
+  family: [
+    { label: "Appilico.com", href: "https://appilico.com", external: true },
+    { label: "Appilico Business", href: "https://business.appilico.com", external: true },
+    { label: "Appilico Sellers", href: "https://sellers.appilico.com", external: true },
+    { label: "Appilico Blog", href: "https://blog.appilico.com", external: true },
+  ],
 };
 
 const socialLinks = [
@@ -44,6 +53,24 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubscribing(true);
+    try {
+      await apiClient.post("/newsletter/subscribe", { email });
+      toast.success("You're subscribed! Welcome to the Appilico family.");
+      setEmail("");
+    } catch {
+      toast.error("Failed to subscribe. Please try again.");
+    } finally {
+      setSubscribing(false);
+    }
+  };
+
   return (
     <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 border-t border-slate-800">
       {/* Newsletter Section */}
@@ -56,16 +83,22 @@ export function Footer() {
                 Subscribe to get special offers, free giveaways, and product launches.
               </p>
             </div>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex w-full md:w-auto gap-2"
-            >
+            <form onSubmit={handleSubscribe} className="flex w-full md:w-auto gap-2">
               <Input
                 type="email"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="w-full md:w-72 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
               />
-              <Button type="submit" className="bg-emerald-500 hover:bg-emerald-400 text-white">Subscribe</Button>
+              <Button
+                type="submit"
+                disabled={subscribing}
+                className="bg-emerald-500 hover:bg-emerald-400 text-white"
+              >
+                {subscribing ? "Subscribing…" : "Subscribe"}
+              </Button>
             </form>
           </div>
         </div>
@@ -73,9 +106,9 @@ export function Footer() {
 
       {/* Links Grid */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           {/* Brand Column */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
+          <div className="col-span-2 md:col-span-3 lg:col-span-2 mb-4 lg:mb-0">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <AppilicoLogo size={32} />
               <span className="text-xl font-bold text-white">Appilico</span>
@@ -86,11 +119,7 @@ export function Footer() {
             <div className="space-y-2 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0" />
-                <span>123 Commerce St, NY 10001</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 shrink-0" />
-                <span>+1 (555) 123-4567</span>
+                <span>Perth, Western Australia 🇦🇺</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
@@ -105,10 +134,7 @@ export function Footer() {
             <ul className="space-y-2.5">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
-                  >
+                  <Link href={link.href} className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -122,10 +148,7 @@ export function Footer() {
             <ul className="space-y-2.5">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
-                  >
+                  <Link href={link.href} className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -139,12 +162,28 @@ export function Footer() {
             <ul className="space-y-2.5">
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
-                  <Link
+                  <Link href={link.href} className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Appilico Family */}
+          <div>
+            <h4 className="font-semibold mb-4 text-white">Appilico Family</h4>
+            <ul className="space-y-2.5">
+              {footerLinks.family.map((link) => (
+                <li key={link.href}>
+                  <a
                     href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -176,11 +215,7 @@ export function Footer() {
 
           <div className="flex items-center gap-4 text-sm text-slate-500">
             {footerLinks.legal.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="hover:text-emerald-400 transition-colors"
-              >
+              <Link key={link.href} href={link.href} className="hover:text-emerald-400 transition-colors">
                 {link.label}
               </Link>
             ))}

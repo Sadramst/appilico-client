@@ -31,6 +31,19 @@ Cypress.Commands.add("login", (email?: string, password?: string) => {
         })
       );
     });
+    // Set the auth cookie so middleware route protection works
+    cy.setCookie("appilico_access_token", "", { domain: "localhost" }).then(() => {
+      cy.window().then((win) => {
+        const token = win.localStorage.getItem("appilico_access_token") ?? "";
+        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        cy.setCookie("appilico_access_token", token, {
+          domain: "localhost",
+          path: "/",
+          expiry: Math.floor(expires.getTime() / 1000),
+          sameSite: "strict",
+        });
+      });
+    });
   });
 });
 

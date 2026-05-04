@@ -23,7 +23,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSearchStore } from "@/stores/search-store";
 import { useCategoryTree } from "@/hooks/use-categories";
 import { useBrands } from "@/hooks/use-brands";
 import { SORT_OPTIONS } from "@/lib/constants";
@@ -36,8 +35,8 @@ function CategoryTreeNode({
   depth = 0,
 }: {
   category: ICategoryTree;
-  selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  selectedId: string | undefined;
+  onSelect: (id: string | undefined) => void;
   depth?: number;
 }) {
   return (
@@ -48,7 +47,7 @@ function CategoryTreeNode({
       >
         <Checkbox
           checked={selectedId === category.id}
-          onCheckedChange={(checked) => onSelect(checked ? category.id : null)}
+          onCheckedChange={(checked) => onSelect(checked ? category.id : undefined)}
         />
         <span className="text-sm">{category.name}</span>
         {category.productCount > 0 && (
@@ -68,46 +67,54 @@ function CategoryTreeNode({
   );
 }
 
-export function ProductFilters() {
+interface ProductFiltersProps {
+  buildUrl: (overrides: Record<string, string | number | boolean | undefined>) => string;
+}
+
+export function ProductFilters({ buildUrl }: ProductFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const {
-    categoryId,
-    brandId,
-    minPrice,
-    maxPrice,
-    minRating,
-    inStock,
-    sortBy,
-    setCategoryId,
-    setBrandId,
-    setPriceRange,
-    setMinRating,
-    setInStock,
-    setSortBy,
-    clearFilters,
-  } = useSearchStore();
   const { data: categoriesData } = useCategoryTree();
   const { data: brandsData } = useBrands();
 
   const categories = categoriesData?.data ?? [];
   const brands = brandsData?.data ?? [];
 
+  const categoryId = searchParams.get("categoryId") ?? undefined;
+  const brandId = searchParams.get("brandId") ?? undefined;
+  const minPrice = searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : 0;
+  const maxPrice = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : 1000;
+  const minRating = searchParams.get("minRating") ? Number(searchParams.get("minRating")) : undefined;
+  const inStock = searchParams.get("inStock") === "true";
+  const sortBy = searchParams.get("sort") ?? "newest";
+
+  const navigate = (overrides: Record<string, string | number | boolean | undefined>) => {
+    router.push(buildUrl(overrides));
+  };
+
   const activeFilterCount = [
     categoryId,
     brandId,
-    minPrice !== null,
-    maxPrice !== null,
+    searchParams.get("minPrice"),
+    searchParams.get("maxPrice"),
     minRating,
-    inStock,
+    inStock || undefined,
   ].filter(Boolean).length;
+
+  const clearFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    ["categoryId", "brandId", "minPrice", "maxPrice", "minRating", "inStock", "sort", "page"].forEach((k) =>
+      params.delete(k)
+    );
+    router.push(`/products?${params.toString()}`);
+  };
 
   const filterContent = (
     <div className="space-y-6">
       {/* Sort */}
       <div className="space-y-2">
         <Label>Sort By</Label>
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v ?? "newest")}>
+        <Select value={sortBy} onValueChange={(v) => navigate({ sort: v ?? undefined })}>
           <SelectTrigger>
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -133,7 +140,7 @@ export function ProductFilters() {
                 key={cat.id}
                 category={cat}
                 selectedId={categoryId}
-                onSelect={setCategoryId}
+                onSelect={(id) => navigate({ categoryId: id })}
               />
             ))}
           </div>
@@ -152,7 +159,7 @@ export function ProductFilters() {
                 <Checkbox
                   checked={brandId === brand.id}
                   onCheckedChange={(checked) =>
-                    setBrandId(checked ? brand.id : null)
+                    navigate({ brandId: checked ? brand.id : undefined })
                   }
                 />
                 <span className="text-sm">{brand.name}</span>
@@ -171,17 +178,20 @@ export function ProductFilters() {
           min={0}
           max={1000}
           step={10}
-          value={[minPrice ?? 0, maxPrice ?? 1000]}
+          value={[minPrice, maxPrice]}
           onValueChange={(values) => {
             const v = Array.isArray(values) ? values : [values];
             const min = v[0] ?? 0;
             const max = v[1] ?? 1000;
-            setPriceRange(min > 0 ? min : null, max < 1000 ? max : null);
+            navigate({
+              minPrice: min > 0 ? min : undefined,
+              maxPrice: max < 1000 ? max : undefined,
+            });
           }}
         />
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>${minPrice ?? 0}</span>
-          <span>${maxPrice ?? 1000}</span>
+          <span>${minPrice}</span>
+          <span>${maxPrice}</span>
         </div>
       </div>
 
@@ -196,7 +206,7 @@ export function ProductFilters() {
               key={r}
               variant={minRating === r ? "default" : "outline"}
               size="sm"
-              onClick={() => setMinRating(minRating === r ? null : r)}
+              onClick={() => navigate({ minRating: minRating === r ? undefined : r })}
             >
               {r}+ ★
             </Button>
@@ -210,7 +220,7 @@ export function ProductFilters() {
       <label className="flex items-center gap-2 cursor-pointer">
         <Checkbox
           checked={inStock}
-          onCheckedChange={(checked) => setInStock(!!checked)}
+          onCheckedChange={(checked) => navigate({ inStock: checked ? true : undefined })}
         />
         <span className="text-sm">In stock only</span>
       </label>
@@ -257,3 +267,4 @@ export function ProductFilters() {
     </>
   );
 }
+

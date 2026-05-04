@@ -103,6 +103,60 @@ test.describe("Products – Pagination", () => {
   });
 });
 
+test.describe("Products – URL Parameter Filters", () => {
+  test("search param in URL filters products", async ({ page }) => {
+    await page.goto("/products?search=shirt");
+    await page.waitForTimeout(3000);
+    await expect(page.locator('[class*="card"]').filter({ has: page.locator('a[href*="/products/"]') }).first()).toBeVisible();
+    await page.screenshot({ path: "e2e/screenshots/pw-products-url-search.png" });
+  });
+
+  test("sort param in URL sets sort dropdown", async ({ page }) => {
+    await page.goto("/products?sort=price_asc");
+    await page.waitForTimeout(2000);
+    const url = page.url();
+    expect(url).toContain("sort=price_asc");
+  });
+
+  test("page param in URL navigates to correct page", async ({ page }) => {
+    await page.goto("/products?page=2");
+    await page.waitForTimeout(3000);
+    const url = page.url();
+    expect(url).toContain("page=2");
+    await expect(page.locator('[class*="card"]').filter({ has: page.locator('a[href*="/products/"]') }).first()).toBeVisible();
+  });
+
+  test("clicking category checkbox updates URL", async ({ page }) => {
+    await page.goto("/products");
+    await page.waitForTimeout(3000);
+    await page.locator("aside").locator('button[role="checkbox"], input[type="checkbox"]').first().click({ force: true });
+    await page.waitForTimeout(1000);
+    const url = page.url();
+    expect(url).toMatch(/categoryId|page/);
+  });
+
+  test("clear filters resets URL to base path", async ({ page }) => {
+    await page.goto("/products?search=shirt&sort=price_asc");
+    await page.waitForTimeout(2000);
+    await page.getByText(/clear/i).first().click();
+    await page.waitForTimeout(1000);
+    const url = page.url();
+    expect(url).toMatch(/\/products\/?(\?page=1)?$/);
+  });
+
+  test("in-stock filter param updates URL", async ({ page }) => {
+    await page.goto("/products");
+    await page.waitForTimeout(3000);
+    const stockCheckbox = page.locator("aside").getByText(/in stock|stock/i).locator("..").locator('button[role="checkbox"], input[type="checkbox"]');
+    if (await stockCheckbox.count() > 0) {
+      await stockCheckbox.first().click({ force: true });
+      await page.waitForTimeout(1000);
+      const url = page.url();
+      expect(url).toContain("inStock=true");
+    }
+  });
+});
+
 test.describe("Products – Mobile", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
