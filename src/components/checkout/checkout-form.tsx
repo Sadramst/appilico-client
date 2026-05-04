@@ -5,13 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CreditCard, MapPin, Check, Loader2, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  Elements,
-  CardElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
+// TODO: Re-enable Stripe once NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is set in Vercel
+// import { loadStripe } from "@stripe/stripe-js";
+// import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -43,10 +39,6 @@ import { useValidateDiscount } from "@/hooks/use-discounts";
 import { PaymentMethodLabels } from "@/types/order.types";
 import { AddressTypeLabels, type ICustomerAddress } from "@/types/customer.types";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
-);
-
 const steps = [
   { id: 1, title: "Shipping", icon: MapPin },
   { id: 2, title: "Payment", icon: CreditCard },
@@ -69,8 +61,10 @@ const emptyAddressForm: AddressFormData = {
 
 function CheckoutFormInner() {
   const router = useRouter();
-  const stripe = useStripe();
-  const elements = useElements();
+  // TODO: const stripe = useStripe();
+  // TODO: const elements = useElements();
+  const stripe = null;
+  const elements = null;
   const [currentStep, setCurrentStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
@@ -128,30 +122,8 @@ function CheckoutFormInner() {
         }
       );
 
-      // If card payment and Stripe client secret returned, confirm payment
-      if (paymentMethod === 0 && orderResponse.clientSecret && stripe && elements) {
-        const cardElement = elements.getElement(CardElement);
-        if (cardElement) {
-          const { error, paymentIntent } = await stripe.confirmCardPayment(
-            orderResponse.clientSecret,
-            { payment_method: { card: cardElement } }
-          );
-
-          if (error) {
-            toast.error(error.message ?? "Payment failed. Please try again.");
-            setIsPlacingOrder(false);
-            return;
-          }
-
-          if (paymentIntent?.status === "succeeded") {
-            clearCart();
-            fireConfetti();
-            toast.success("Payment successful! Order placed.");
-            router.push(`/orders/${orderResponse.id}?success=1`);
-            return;
-          }
-        }
-      }
+      // TODO: Stripe card payment — re-enable once NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is set
+      // if (paymentMethod === 0 && orderResponse.clientSecret && stripe && elements) { ... }
 
       // Non-card or no client secret: just navigate
       clearCart();
@@ -390,25 +362,11 @@ function CheckoutFormInner() {
                     ))}
                   </RadioGroup>
 
-                  {/* Stripe Card Element — shown only for card payment */}
+                  {/* TODO: Re-enable Stripe CardElement once key is configured */}
                   {paymentMethod === 0 && (
                     <div className="mt-4 p-4 border rounded-lg bg-muted/30">
-                      <Label className="text-sm font-medium mb-3 block">Card Details</Label>
-                      <CardElement
-                        options={{
-                          style: {
-                            base: {
-                              fontSize: "14px",
-                              color: "var(--foreground)",
-                              "::placeholder": { color: "var(--muted-foreground)" },
-                            },
-                            invalid: { color: "var(--destructive)" },
-                          },
-                        }}
-                        className="py-3"
-                      />
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Your payment is secured with 256-bit SSL encryption.
+                      <p className="text-sm text-muted-foreground text-center py-2">
+                        Card payments coming soon. Please choose another payment method.
                       </p>
                     </div>
                   )}
@@ -679,9 +637,5 @@ function CheckoutFormInner() {
 }
 
 export function CheckoutForm() {
-  return (
-    <Elements stripe={stripePromise}>
-      <CheckoutFormInner />
-    </Elements>
-  );
+  return <CheckoutFormInner />;
 }
